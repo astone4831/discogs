@@ -4,6 +4,7 @@ import json
 import time
 import random
 from datetime import date, datetime
+import os
 
 
 class discogs():
