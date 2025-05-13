@@ -151,8 +151,8 @@ class discogs():
         df = pd.DataFrame(d, columns = ['url', 'label', 'catno', 'format', 'format_qty', 'tracks', 'duration','position', 'notes'])
         print(df.head())
         file = f"output/{data['id']}.csv"
-        df.to_csv(file, index = False)
-        return(file)
+        #df.to_csv(file, index = False)
+        return(df)
 '''
 xx = discogs()
 data = xx.get_release('5101485')
