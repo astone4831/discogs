@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discogs Flask App</title>
+</head>
+<body>
+    <h1>Search by Release ID</h1>
+    <input type="text" id="releaseId" placeholder="Enter release ID">
+    <button onclick="fetchRelease()">Search</button>
 
+    <h1>Search releases with Artist ID</h1>
+    <input type="text" id="artistId" placeholder="Enter artist ID">
+    <button onclick="fetchArtist()">Search</button>
+
+    <pre id="output"></pre>
+    <script>
+        async function fetchRelease() {
+            const id = document.getElementById('releaseId').value;
+            const res = await fetch(`/release?id=${id}`);
+            const data = await res.json();
+            document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function fetchArtist() {
+            const id = document.getElementById('artistId').value;
+            const res = await fetch(`/artist_releases?id=${id}`);
+            const data = await res.json();
+            document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+    <h2>CSV output</h2>
+    <input type="text" id="csvReleaseId" placeholder="Enter release ID">
+    <button onclick="downloadCSV()">Download CSV</button>
+    <script>
+        function downloadCSV(){
+            const id = document.getElementById('csvReleaseId').value;
+            if (!id) return;
+            window.location.href = `/download_csv?id=${id}`;
+
+        }
+
+    </script>
+
+    <h2>Download Full Discography CSV</h2>
+    <input type="text" id="artistCsvId" placeholder="Enter artist ID">
+    <button onclick="downloadArtistCSV()">Download Artist Discography</button>
+    <script>
+        function downloadArtistCSV() {
+            const id = document.getElementById('artistCsvId').value;
+            if (!id) return;
+            window.location.href = `/download_artist_csv?id=${id}`;
+        }
+    </script>
+
+</body>
+</html>
