@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template, send_file
 import requests
-import discogs as dc
+import discogs_api as dc
 import os
 import pandas as pd
 
