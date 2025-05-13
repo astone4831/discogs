@@ -43,6 +43,7 @@
 
     <h2>Download Full Discography CSV</h2>
     <input type="text" id="artistCsvId" placeholder="Enter artist ID">
+    <button onclick="downloadArtistCSV()">Download Artist Discography</button>
     <script>
     async function downloadArtistCSV() {
         const id = document.getElementById('artistCsvId').value;
