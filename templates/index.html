@@ -43,14 +43,35 @@
 
     <h2>Download Full Discography CSV</h2>
     <input type="text" id="artistCsvId" placeholder="Enter artist ID">
-    <button onclick="downloadArtistCSV()">Download Artist Discography</button>
     <script>
-        function downloadArtistCSV() {
-            const id = document.getElementById('artistCsvId').value;
-            if (!id) return;
-            window.location.href = `/download_artist_csv?id=${id}`;
+    async function downloadArtistCSV() {
+        const id = document.getElementById('artistCsvId').value;
+        if (!id) {
+            alert("Please enter an artist ID");
+            return;
         }
-    </script>
+        try {
+            const res = await fetch(`/download_artist_csv?id=${id}`);
+            if (!res.ok) {
+                const error = await res.json();
+                alert("Error: " + error.error);
+                return;
+            }
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `artist_${id}.csv`; // File will save to Downloads by default
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            alert("Unexpected error: " + err.message);
+        }
+    }
+</script>
 
+    
 </body>
 </html>
