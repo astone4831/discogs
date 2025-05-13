@@ -1,1 +1,55 @@
-print('hello')
+from flask import Flask, jsonify, request, render_template, send_file
+import requests
+import discogs as dc
+import os
+import pandas as pd
+
+app = Flask(__name__)
+dc = dc.discogs()  # instantiate your class
+@app.route('/')
+def home():
+    return render_template('index.html')
+@app.route('/release')
+def release():
+    release_id = request.args.get('id')
+    if not release_id:
+        return jsonify({'error': 'No release ID provided'}), 400
+    
+    data = dc.get_release(release_id)
+    return jsonify(data)
+
+@app.route('/artist_releases')
+def artist_releases():
+    artist_id = request.args.get('id')
+    if not artist_id:
+        return jsonify({'error': 'No artist ID provided'}), 400
+    data = dc.artist_releases(artist_id)
+    return jsonify(data)
+
+@app.route('/download_csv')
+def download_csv():
+    release_id = request.args.get('id')
+    if not release_id:
+        return jsonify({'erre':'No Release ID provided'}), 400
+    release_data = dc.get_release(release_id)
+    print(release_data.keys())
+    file_path= dc.parsing_release_lists(release_data)
+
+    if not os.path.exists(file_path):
+        return jsonify({'error':'CSV file not found'}), 500
+
+    return(send_file(file_path, as_attachment = True))
+
+@app.route('/download_artist_csv')
+def download_artist_csv():
+    artist_id = request.args.get('id')
+    if not artist_id:
+        return jsonify({'error': 'No artist ID provided'}), 400
+    try:
+        file_path = dc.export_artist_releases_csv(artist_id)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    return send_file(file_path, as_attachment=True)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port = 10000)
