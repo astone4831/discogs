@@ -28,7 +28,7 @@ class discogs():
         with open('C://Users//stonea//Documents//GitHub//UMe_Analyst//discogs//keys.json', 'r') as file:
             data = json.load(file)
 
-        self.headers = {"Authorization": f"Discogs key = {os.getenv('DISCOGS_KEY')}, secret = {os.getenv'DISCOGS_SECRET'}"}
+        self.headers = {"Authorization": f"Discogs key = {os.getenv('DISCOGS_KEY')}, secret = {os.getenv('DISCOGS_SECRET')}"}
 
     def get_release(self, release_id):
         url = f"{self.url_}releases/{release_id}"
