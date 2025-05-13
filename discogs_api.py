@@ -23,16 +23,12 @@ class discogs():
         raise TypeError ("Type %s not serializable" % type(obj))
 
     def __init__(self):
-        with open('C://Users//stonea//Documents//GitHub//UMe_Analyst//discogs//token.json', 'r') as file:
-            data = json.load(file)
-        
-        self.token = data['token']
         self.url_ = "https://api.discogs.com/"
         self.t = 10
         with open('C://Users//stonea//Documents//GitHub//UMe_Analyst//discogs//keys.json', 'r') as file:
             data = json.load(file)
 
-        self.headers = {"Authorization": f"Discogs key = {data['key']}, secret = {data['secret']}"}
+        self.headers = {"Authorization": f"Discogs key = {os.getenv('DISCOGS_KEY')}, secret = {os.getenv'DISCOGS_SECRET'}}
 
     def get_release(self, release_id):
         url = f"{self.url_}releases/{release_id}"
