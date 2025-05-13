@@ -88,6 +88,8 @@ class discogs():
     def export_artist_releases_csv(self, artist_id):
         releases = self.artist_releases(artist_id)
         df = pd.DataFrame(releases)
+        os.makedirs('output', exist_ok=True)
+        
         path = f"output/artist_{artist_id}.csv"
         df.to_csv(path, index=False)
         return path
