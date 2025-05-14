@@ -42,6 +42,7 @@
     </div>
     <!-- Output -->
     <h5>Results</h5>
+    <div id="status" class="alert alert-secondary" role="alert" style="display: none;"></div>
     <pre id="output" class="bg-white border rounded p-3" style="max-height: 400px; overflow: auto;"></pre>
   </div>
   <!-- Scripts -->
@@ -54,9 +55,19 @@
     }
     async function fetchArtist() {
       const id = document.getElementById('artistId').value;
-      const res = await fetch(`/artist_releases?id=${id}`);
-      const data = await res.json();
-      document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+      showStatus("Fetching artist releases...", "info");
+      try {
+        const res = await fetch(`/artist_releases?id=${id}`);
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+          showStatus("Artist releases loaded!", "success");
+        } else {
+          showStatus("Error: " + (data.error || "Unknown error"), "danger");
+        }
+      } catch (err) {
+        showStatus("Unexpected error: " + err.message, "danger");
+      }
     }
     function downloadCSV() {
       const id = document.getElementById('csvReleaseId').value;
@@ -66,14 +77,15 @@
     async function downloadArtistCSV() {
       const id = document.getElementById('artistCsvId').value;
       if (!id) {
-        alert("Please enter an artist ID");
+        showStatus("Please enter an artist ID", "warning");
         return;
       }
+      showStatus("Preparing your CSV...", "info");
       try {
         const res = await fetch(`/download_artist_csv?id=${id}`);
         if (!res.ok) {
           const error = await res.json();
-          alert("Error: " + error.error);
+          showStatus("Error: " + error.error, "danger");
           return;
         }
         const blob = await res.blob();
@@ -85,10 +97,21 @@
         a.click();
         a.remove();
         window.URL.revokeObjectURL(url);
+        showStatus("Download started!", "success");
       } catch (err) {
-        alert("Unexpected error: " + err.message);
+        showStatus("Unexpected error: " + err.message, "danger");
       }
     }
+
+  function showStatus(message, type = "secondary") {
+  const status = document.getElementById("status");
+  status.className = `alert alert-${type}`;
+  status.innerText = message;
+  status.style.display = "block";
+}
+function hideStatus() {
+  document.getElementById("status").style.display = "none";
+}
   </script>
 </body>
 </html>
