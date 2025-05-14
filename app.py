@@ -30,15 +30,16 @@ def artist_releases():
 def download_csv():
     release_id = request.args.get('id')
     if not release_id:
-        return jsonify({'erre':'No Release ID provided'}), 400
-    release_data = dc.get_release(release_id)
-    print(release_data.keys())
-    file_path= dc.parsing_release_lists(release_data)
-
-    if not os.path.exists(file_path):
-        return jsonify({'error':'CSV file not found'}), 500
-
-    return(send_file(file_path, as_attachment = True))
+        return jsonify({'error': 'No release ID provided'}), 400
+    try:
+        release_data = dc.get_release(release_id)
+        file_path = dc.parsing_release_lists(release_data)
+        if not os.path.exists(file_path):
+            raise Exception("CSV file not found after generation")
+    except Exception as e:
+        print("ERROR:", e)
+        return jsonify({'error': str(e)}), 500
+    return send_file(file_path, as_attachment=True)
 
 @app.route('/download_artist_csv')
 def download_artist_csv():
