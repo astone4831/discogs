@@ -37,7 +37,7 @@ class discogs():
         if r.status_code != 200:
             print("Failed request:", r.status_code, r.text)
             raise Exception(f"Discogs API Error {r.status_code}")
-        parsing_release_lists(r.json, release_id)
+        #parsing_release_lists(r.json, release_id)
         return r.json()
 
     
@@ -109,7 +109,7 @@ class discogs():
     def pagination(self, r):
         pass
 
-    def parsing_release_lists(self,data, release_id):
+    def parsing_release_lists(self,data):
         url = [] #will be 1 itme
         year = [] # will be 1 item
         labels = [] #could be multiple
