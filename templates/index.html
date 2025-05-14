@@ -42,7 +42,10 @@
     </div>
     <!-- Output -->
     <h5>Results</h5>
-    <div id="status" class="alert alert-secondary" role="alert" style="display: none;"></div>
+    <div id="status" class="alert alert-secondary d-flex align-items-center" role="alert" style="display: none;">
+  <div id="statusSpinner" class="spinner-border spinner-border-sm me-2" role="status" style="display: none;"></div>
+  <div id="statusText">Loading...</div>
+</div>
     <pre id="output" class="bg-white border rounded p-3" style="max-height: 400px; overflow: auto;"></pre>
   </div>
   <!-- Scripts -->
