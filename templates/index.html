@@ -55,13 +55,13 @@
     }
     async function fetchArtist() {
       const id = document.getElementById('artistId').value;
-      showStatus("Fetching artist releases...", "info");
+      showStatus("Fetching artist releases...", "info", true);
       try {
         const res = await fetch(`/artist_releases?id=${id}`);
         const data = await res.json();
         if (res.ok) {
           document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-          showStatus("Artist releases loaded!", "success");
+         showStatus("Artist releases loaded!", "success");
         } else {
           showStatus("Error: " + (data.error || "Unknown error"), "danger");
         }
@@ -80,7 +80,7 @@
         showStatus("Please enter an artist ID", "warning");
         return;
       }
-      showStatus("Preparing your CSV...", "info");
+      showStatus("Preparing your CSV...", "info", true);
       try {
         const res = await fetch(`/download_artist_csv?id=${id}`);
         if (!res.ok) {
@@ -103,15 +103,23 @@
       }
     }
 
-  function showStatus(message, type = "secondary") {
+function showStatus(message, type = "secondary", showSpinner = false) {
   const status = document.getElementById("status");
-  status.className = `alert alert-${type}`;
-  status.innerText = message;
-  status.style.display = "block";
+  const statusText = document.getElementById("statusText");
+  const spinner = document.getElementById("statusSpinner");
+  status.className = `alert alert-${type} d-flex align-items-center`;
+  statusText.innerText = message;
+  if (showSpinner) {
+    spinner.style.display = "inline-block";
+  } else {
+    spinner.style.display = "none";
+  }
+  status.style.display = "flex";
 }
 function hideStatus() {
   document.getElementById("status").style.display = "none";
 }
+
   </script>
 </body>
 </html>
