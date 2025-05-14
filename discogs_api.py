@@ -37,6 +37,7 @@ class discogs():
         if r.status_code != 200:
             print("Failed request:", r.status_code, r.text)
             raise Exception(f"Discogs API Error {r.status_code}")
+        parsing_release_lists(r.json, release_id)
         return r.json()
 
     
@@ -108,7 +109,7 @@ class discogs():
     def pagination(self, r):
         pass
 
-    def parsing_release_lists(self,data):
+    def parsing_release_lists(self,data, release_id):
         url = [] #will be 1 itme
         year = [] # will be 1 item
         labels = [] #could be multiple
@@ -151,10 +152,10 @@ class discogs():
 
         d = list(zip(url, labels,catno,format_type, format_qty, tracks, duration, position, notes))
         df = pd.DataFrame(d, columns = ['url', 'label', 'catno', 'format', 'format_qty', 'tracks', 'duration','position', 'notes'])
-        print(df.head())
-        file = f"output/{data['id']}.csv"
-        #df.to_csv(file, index = False)
-        return(df)
+        os.makedirs('output', exist_ok=True)
+        path = f"output/release_{release_id}.csv"
+        df.to_csv(path, index=False)
+        return path
 '''
 xx = discogs()
 data = xx.get_release('5101485')
