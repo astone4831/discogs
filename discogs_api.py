@@ -152,10 +152,13 @@ class discogs():
 
         d = list(zip(url, labels,catno,format_type, format_qty, tracks, duration, position, notes))
         df = pd.DataFrame(d, columns = ['url', 'label', 'catno', 'format', 'format_qty', 'tracks', 'duration','position', 'notes'])
-        os.makedirs('output', exist_ok=True)
-        path = f"output/release_{release_id}.csv"
+        os.makedirs("output", exist_ok=True)
+        file = data['id']
+        path = f'output/{file}.csv'
         df.to_csv(path, index=False)
-        return path
+        return path  # Return file path (NOT DataFrame)
+
+
 '''
 xx = discogs()
 data = xx.get_release('5101485')
