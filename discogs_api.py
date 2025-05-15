@@ -27,6 +27,7 @@ class discogs():
         self.url_ = "https://api.discogs.com/"
         self.t = 10
         self.headers = {"Authorization": f"Discogs key = {os.getenv('DISCOGS_KEY')}, secret = {os.getenv('DISCOGS_SECRET')}"}
+        self.token = os.getenv('ADMIN_TOKEN')
 
     def get_release(self, release_id):
         url = f"{self.url_}releases/{release_id}"
