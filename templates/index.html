@@ -122,7 +122,15 @@ async function searchArtistName() {
   }
   const res = await fetch(`/search_artist?q=${encodeURIComponent(query)}`);
   const artists = await res.json();
+  console.log("Autocomplete results:", artists); // <--- debug line
   suggestions.innerHTML = '';
+  if (!artists.length) {
+    const li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.textContent = 'No results';
+    suggestions.appendChild(li);
+    return;
+  }
   artists.forEach(artist => {
     const li = document.createElement('li');
     li.className = 'list-group-item list-group-item-action';
