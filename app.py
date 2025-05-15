@@ -52,5 +52,25 @@ def download_artist_csv():
         return jsonify({'error': str(e)}), 500
     return send_file(file_path, as_attachment=True)
 
+@app.route('/search_artist')
+def search_artist():
+    query = request.args.get('q')
+    if not query:
+        return jsonify([])
+    url = "https://api.discogs.com/database/search"
+    params = {
+        "q": query,
+        "type": "artist",
+        "token": dc.token
+    }
+    r = requests.get(url, params=params)
+    results = r.json().get('results', [])
+    # Clean response
+    cleaned = [
+        {"id": r['id'], "name": r['title']}
+        for r in results if 'id' in r and 'title' in r
+    ]
+    return jsonify(cleaned)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port = 10000)
