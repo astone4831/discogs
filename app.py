@@ -58,12 +58,12 @@ def search_artist():
     if not query:
         return jsonify([])
     url = "https://api.discogs.com/database/search"
+    headers = dc.headers
     params = {
         "q": query,
         "type": "artist",
-        "token": dc.token
     }
-    r = requests.get(url, params=params)
+    r = requests.get(url, params=params, headers = headers)
     results = r.json().get('results', [])
     # Clean response
     cleaned = [
