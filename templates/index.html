@@ -16,6 +16,12 @@
         <button onclick="fetchRelease()" class="btn btn-primary">Search</button>
       </div>
     </div>
+
+  <div class="mb-3">
+    <label for="artistNameInput" class="form-label">Search Artist by Name</label>
+    <input type="text" id="artistNameInput" class="form-control" placeholder="e.g. Taylor Swift" oninput="searchArtistName()">
+    <ul id="artistSuggestions" class="list-group mt-1" style="position: absolute; z-index: 999; max-height: 200px; overflow-y: auto;"></ul>
+  </div>
     <!-- Artist Releases Search -->
     <div class="mb-4">
       <h4>Search Releases by Artist ID</h4>
@@ -105,6 +111,30 @@
         showStatus("Unexpected error: " + err.message, "danger");
       }
     }
+
+async function searchArtistName() {
+  const input = document.getElementById('artistNameInput');
+  const suggestions = document.getElementById('artistSuggestions');
+  const query = input.value;
+  if (query.length < 2) {
+    suggestions.innerHTML = '';
+    return;
+  }
+  const res = await fetch(`/search_artist?q=${encodeURIComponent(query)}`);
+  const artists = await res.json();
+  suggestions.innerHTML = '';
+  artists.forEach(artist => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item list-group-item-action';
+    li.textContent = `${artist.name} (ID: ${artist.id})`;
+    li.onclick = () => {
+      document.getElementById('artistId').value = artist.id;
+      suggestions.innerHTML = '';
+      input.value = artist.name;
+    };
+    suggestions.appendChild(li);
+  });
+}
 
 function showStatus(message, type = "secondary", showSpinner = false) {
   const status = document.getElementById("status");
