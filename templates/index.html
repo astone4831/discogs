@@ -174,14 +174,37 @@ async function searchArtistName() {
   });
 }
 
-  function downloadMasterDeepCSV() {
-    const id = document.getElementById('masterDeepId').value;
-    if (!id) {
-      alert("Enter a master ID");
-      return;
-    }
-    window.location.href = `/download_master_deep_csv?id=${id}`;
+async function downloadMasterDeepCSV() {
+  const id = document.getElementById('masterDeepId').value;
+  if (!id) {
+    alert("Enter a master ID");
+    return;
   }
+  const res = await fetch(`/download_master_deep_csv?id=${id}`);
+  if (res.status === 202) {
+    const data = await res.json();
+    const confirmDownload = confirm(data.warning + "\n\nContinue anyway?");
+    if (confirmDownload) {
+      // Retry forced download (skip check in backend if needed)
+      window.location.href = `/download_master_deep_csv?id=${id}&force=true`;
+    }
+    return;
+  }
+  if (!res.ok) {
+    const err = await res.json();
+    alert("Error: " + err.error);
+    return;
+  }
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `master_${id}_deep.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+}
 
     
 function showStatus(message, type = "secondary", showSpinner = false) {
