@@ -94,5 +94,18 @@ def search_artist():
     ]
     return jsonify(cleaned)
 
+@app.route('/download_master_deep_csv')
+def download_master_deep_csv():
+    master_id = request.args.get('id')
+    if not master_id:
+        return jsonify({'error': 'No master ID provided'}), 400
+    try:
+        file_path = dc.export_master_release_details_csv(master_id)
+    except Exception as e:
+        print("ERROR:", e)
+        return jsonify({'error': str(e)}), 500
+    return send_file(file_path, as_attachment=True)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port = 10000)
