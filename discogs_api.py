@@ -44,23 +44,26 @@ class discogs():
         return r.json()
 
     
-    def master_release(self, master_id):
-        '''
-        master releases almost always have pagination built in so this needs to be handled here not in the loop
-        '''
-        
+    def export_master_versions_csv(self, master_id):
         url = f"{self.url_}masters/{master_id}/versions?per_page=100"
-        r = requests.get(url, headers = self.headers)
-        self.rate_check(r.headers)
-        if r.status_code == 200:
-            return(r.json())
-        elif r.status_code == 429:
-            print(r.text)
-        else:
-            time.sleep(10)
-            print('sleeping')
-            #is recurssion a smart way to do this? Maybe add a self.recursive depth to make sure you dont get stuck?
-            return self.master_release(master_id)
+        all_versions = []
+        page = 1
+        while True:
+            r = requests.get(f"{url}&page={page}", headers=self.headers)
+            self.rate_check(r.headers)
+            if r.status_code != 200:
+                raise Exception(f"Discogs API error {r.status_code}: {r.text}")
+            data = r.json()
+            versions = data.get('versions', [])
+            all_versions.extend(versions)
+            if page >= data['pagination']['pages']:
+                break
+            page += 1
+        df = pd.DataFrame(all_versions)
+        os.makedirs("output", exist_ok=True)
+        path = f"output/master_{master_id}_versions.csv"
+        df.to_csv(path, index=False)
+        return path
     
     def artist(self, artist_id):
         url = f"{self.url_}artists/{artist_id}"
