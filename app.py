@@ -26,6 +26,13 @@ def artist_releases():
     data = dc.artist_releases(artist_id)
     return jsonify(data)
 
+@app.route('/env_check')
+def env_check():
+    return jsonify({
+        "key": os.getenv('DISCOGS_KEY'),
+        "secret": os.getenv('DISCOGS_SECRET')
+    })
+
 @app.route('/download_csv')
 def download_csv():
     release_id = request.args.get('id')
