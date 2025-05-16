@@ -188,17 +188,17 @@ class discogs():
         # This will collect all parsed DataFrames
         all_dfs = []
         for release_id in all_ids:
-        try:
-            time.sleep(0.3)
-            release_data = self.get_release(release_id)
-            df = self.parsing_release_lists(release_data, return_df=True)
-            # Add a blank row at the end of this release
-            blank_row = pd.DataFrame([[""] * df.shape[1]], columns=df.columns)
-            df = pd.concat([df, blank_row], ignore_index=True)
-            all_dfs.append(df)
-        except Exception as e:
-            print(f"Skipping release {release_id}: {e}")
-            continue
+            try:
+                time.sleep(0.3)
+                release_data = self.get_release(release_id)
+                df = self.parsing_release_lists(release_data, return_df=True)
+                # Add a blank row at the end of this release
+                blank_row = pd.DataFrame([[""] * df.shape[1]], columns=df.columns)
+                df = pd.concat([df, blank_row], ignore_index=True)
+                all_dfs.append(df)
+            except Exception as e:
+                print(f"Skipping release {release_id}: {e}")
+                continue
         if not all_dfs:
             raise Exception("No releases could be processed.")
         final_df = pd.concat(all_dfs, ignore_index=True)
