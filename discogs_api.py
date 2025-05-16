@@ -163,7 +163,37 @@ class discogs():
         path = f'output/{file}.csv'
         df.to_csv(path, index=False)
         return path  # Return file path (NOT DataFrame)
-
+        
+def export_master_release_details_csv(self, master_id):
+    # Step 1: Get all version release IDs
+    url = f"{self.url_}masters/{master_id}/versions?per_page=100"
+    all_ids = []
+    page = 1
+    while True:
+        r = requests.get(f"{url}&page={page}", headers=self.headers)
+        self.rate_check(r.headers)
+        if r.status_code != 200:
+            raise Exception(f"Discogs API error {r.status_code}: {r.text}")
+        data = r.json()
+        versions = data.get('versions', [])
+        all_ids.extend([v['id'] for v in versions if 'id' in v])
+        if page >= data['pagination']['pages']:
+            break
+        page += 1
+    # Step 2: Get full release data for each ID
+    releases = []
+    for release_id in all_ids:
+        time.sleep(0.3)  # stay respectful of rate limits
+        r = requests.get(f"{self.url_}releases/{release_id}", headers=self.headers)
+        self.rate_check(r.headers)
+        if r.status_code == 200:
+            releases.append(r.json())
+    # Step 3: Flatten into CSV
+    df = pd.json_normalize(releases)
+    os.makedirs("output", exist_ok=True)
+    path = f"output/master_{master_id}_deep.csv"
+    df.to_csv(path, index=False)
+    return path
 
 '''
 xx = discogs()
