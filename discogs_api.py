@@ -26,6 +26,8 @@ class discogs():
     def __init__(self):
         self.url_ = "https://api.discogs.com/"
         self.t = 10
+        self.key = os.getenv('DISCOGS_KEY')
+        self.secret = os.getenv('DISCOGS_SECRET')
         self.headers = {"Authorization": f"Discogs key = {os.getenv('DISCOGS_KEY')}, secret = {os.getenv('DISCOGS_SECRET')}"}
         self.token = os.getenv('ADMIN_TOKEN')
 
