@@ -115,91 +115,96 @@ class discogs():
     def pagination(self, r):
         pass
 
-    def parsing_release_lists(self,data):
-        url = [] #will be 1 itme
-        year = [] # will be 1 item
-        labels = [] #could be multiple
-        format_type = [] #list?
-        format_qty = []
-        catno = []
-        tracks = []
-        duration= []
-        position = []
-        notes = []
-        for d in data['tracklist']:
-            #print(d.keys())
-            tracks.append(d['title'])
-            duration.append(d['duration'])
-            position.append(d['position'])
-            try:
-                url.append(data['uri'])
-            except KeyError:
-                url.append('not found')
-            try:
-                labels.append(data['labels'][0]['name'])
-            except:
-                labels.append('not found')
-            try:
-                catno.append(data['labels'][0]['catno'])
-            except:
-                catno.append('not found')
-            try:
-                format_type.append(data['formats'][0]['name'])
-            except:
-                format_type.append('not found')
-            try:
-                format_qty.append(data['formats'][0]['qty'])
-            except:
-                format_qty.append('not found')
-            try:
-                notes.append(data['notes'])
-            except:
-                notes.append('no notes')
-
-        d = list(zip(url, labels,catno,format_type, format_qty, tracks, duration, position, notes))
-        df = pd.DataFrame(d, columns = ['url', 'label', 'catno', 'format', 'format_qty', 'tracks', 'duration','position', 'notes'])
-        os.makedirs("output", exist_ok=True)
-        file = data['id']
-        path = f'output/{file}.csv'
-        df.to_csv(path, index=False)
-        return path  # Return file path (NOT DataFrame)
+    def parsing_release_lists(self, data, return_df=False):
+    url = []
+    year = []
+    labels = []
+    format_type = []
+    format_qty = []
+    catno = []
+    tracks = []
+    duration = []
+    position = []
+    notes = []
+    title = []
+    artist = []
+    release_id = []
+    for d in data.get('tracklist', []):
+        tracks.append(d.get('title', ''))
+        duration.append(d.get('duration', ''))
+        position.append(d.get('position', ''))
+        url.append(data.get('uri', 'not found'))
+        title.append(data.get('title', 'not found'))
+        artist.append(data.get('artists_sort', 'not found'))
+        release_id.append(data.get('id'))
+        try:
+            labels.append(data['labels'][0]['name'])
+        except:
+            labels.append('not found')
+        try:
+            catno.append(data['labels'][0]['catno'])
+        except:
+            catno.append('not found')
+        try:
+            format_type.append(data['formats'][0]['name'])
+        except:
+            format_type.append('not found')
+        try:
+            format_qty.append(data['formats'][0]['qty'])
+        except:
+            format_qty.append('not found')
+        try:
+            notes.append(data.get('notes', 'no notes'))
+        except:
+            notes.append('no notes')
+    d = list(zip(release_id, artist, title, url, labels, catno, format_type, format_qty, tracks, duration, position, notes))
+    df = pd.DataFrame(d, columns=[
+        'release_id', 'artist', 'release_title', 'url', 'label', 'catno',
+        'format', 'format_qty', 'track_title', 'duration', 'position', 'notes'
+    ])
+    if return_df:
+        return df
+    # Original behavior for single release:
+    file = data['id']
+    df.to_csv(f'output/{file}.csv', index=False)
+    return f'output/{file}.csv'
         
-        def export_master_release_details_csv(self, master_id):
-        print(f"Starting deep pull for master ID: {master_id}")
-        url = f"{self.url_}masters/{master_id}/versions?per_page=100"
-        all_ids = []
-        page = 1
-        while True:
-            r = requests.get(f"{url}&page={page}", headers=self.headers)
-            self.rate_check(r.headers)
-            if r.status_code != 200:
-                raise Exception(f"Discogs API error {r.status_code}: {r.text}")
-            versions = r.json().get('versions', [])
-            all_ids.extend([v['id'] for v in versions if 'id' in v])
-            if page >= r.json()['pagination']['pages']:
-                break
-            page += 1
-        print(f"Total release IDs to fetch: {len(all_ids)}")
-        # This will collect all parsed DataFrames
-        all_dfs = []
-        for release_id in all_ids:
-            try:
-                time.sleep(0.3)
-                release_data = self.get_release(release_id)
-                # Reuse your tracklist flattener here
-                df = self.parsing_release_lists(release_data, return_df=True)
-                all_dfs.append(df)
-            except Exception as e:
-                print(f"Skipping release {release_id}: {e}")
-                continue
-        if not all_dfs:
-            raise Exception("No releases could be processed.")
-        final_df = pd.concat(all_dfs, ignore_index=True)
-        os.makedirs("output", exist_ok=True)
-        path = f"output/master_{master_id}_deep.csv"
-        final_df.to_csv(path, index=False)
-        print(f"Saved final deep CSV with {len(final_df)} rows to {path}")
-        return path
+    def export_master_release_details_csv(self, master_id):
+    print(f"Starting deep pull for master ID: {master_id}")
+    url = f"{self.url_}masters/{master_id}/versions?per_page=100"
+    all_ids = []
+    page = 1
+    while True:
+        r = requests.get(f"{url}&page={page}", headers=self.headers)
+        self.rate_check(r.headers)
+        if r.status_code != 200:
+            raise Exception(f"Discogs API error {r.status_code}: {r.text}")
+        versions = r.json().get('versions', [])
+        all_ids.extend([v['id'] for v in versions if 'id' in v])
+        if page >= r.json()['pagination']['pages']:
+            break
+        page += 1
+    print(f"Total release IDs to fetch: {len(all_ids)}")
+    # This will collect all parsed DataFrames
+    all_dfs = []
+    for release_id in all_ids:
+        try:
+            time.sleep(0.3)
+            release_data = self.get_release(release_id)
+            # Reuse your tracklist flattener here
+            df = self.parsing_release_lists(release_data, return_df=True)
+            all_dfs.append(df)
+        except Exception as e:
+            print(f"Skipping release {release_id}: {e}")
+            continue
+    if not all_dfs:
+        raise Exception("No releases could be processed.")
+    final_df = pd.concat(all_dfs, ignore_index=True)
+    os.makedirs("output", exist_ok=True)
+    path = f"output/master_{master_id}_deep.csv"
+    final_df.to_csv(path, index=False)
+    print(f"Saved final deep CSV with {len(final_df)} rows to {path}")
+    return path
 
 '''
 xx = discogs()
