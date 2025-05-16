@@ -30,8 +30,6 @@ class discogs():
         self.secret = os.getenv('DISCOGS_SECRET')
         self.headers = {"Authorization": f"Discogs key = {os.getenv('DISCOGS_KEY')}, secret = {os.getenv('DISCOGS_SECRET')}"}
         self.token = os.getenv('ADMIN_TOKEN')
-        print(os.getenv('DISCOGS_KEY'))
-        print(os.getenv('DISCOGS_SECRET'))
 
     def get_release(self, release_id):
         url = f"{self.url_}releases/{release_id}"
