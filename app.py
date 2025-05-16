@@ -33,6 +33,18 @@ def env_check():
         "secret": os.getenv('DISCOGS_SECRET')
     })
 
+@app.route('/download_master_csv')
+def download_master_csv():
+    master_id = request.args.get('id')
+    if not master_id:
+        return jsonify({'error': 'No master ID provided'}), 400
+    try:
+        file_path = dc.export_master_versions_csv(master_id)
+    except Exception as e:
+        print("ERROR:", e)
+        return jsonify({'error': str(e)}), 500
+    return send_file(file_path, as_attachment=True)
+
 @app.route('/download_csv')
 def download_csv():
     release_id = request.args.get('id')
