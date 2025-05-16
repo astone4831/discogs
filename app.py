@@ -99,10 +99,19 @@ def download_master_deep_csv():
     master_id = request.args.get('id')
     if not master_id:
         return jsonify({'error': 'No master ID provided'}), 400
+    # Pre-check version count
+    try:
+        r = requests.get(f"https://api.discogs.com/masters/{master_id}/versions?per_page=1", headers=dc.headers)
+        if r.status_code != 200:
+            return jsonify({'error': 'Invalid master ID or Discogs error'}), 400
+        total_versions = r.json().get('pagination', {}).get('items', 0)
+        if total_versions > 200:
+            return jsonify({'warning': f'This master has {total_versions} versions. Are you sure you want to download them all?'}), 202
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     try:
         file_path = dc.export_master_release_details_csv(master_id)
     except Exception as e:
-        print("ERROR:", e)
         return jsonify({'error': str(e)}), 500
     return send_file(file_path, as_attachment=True)
 
