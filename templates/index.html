@@ -177,22 +177,25 @@ async function searchArtistName() {
 async function downloadMasterDeepCSV() {
   const id = document.getElementById('masterDeepId').value;
   if (!id) {
-    alert("Enter a master ID");
+    showStatus("Enter a master ID", "warning");
     return;
   }
+  showStatus("Checking master size...", "info", true);
   const res = await fetch(`/download_master_deep_csv?id=${id}`);
   if (res.status === 202) {
     const data = await res.json();
-    const confirmDownload = confirm(data.warning + "\n\nContinue anyway?");
-    if (confirmDownload) {
-      // Retry forced download (skip check in backend if needed)
+    const proceed = confirm(data.warning);
+    if (proceed) {
+      showStatus("Generating deep CSV (this may take a minute)...", "info", true);
       window.location.href = `/download_master_deep_csv?id=${id}&force=true`;
+    } else {
+      hideStatus();
     }
     return;
   }
   if (!res.ok) {
     const err = await res.json();
-    alert("Error: " + err.error);
+    showStatus("Error: " + err.error, "danger");
     return;
   }
   const blob = await res.blob();
@@ -204,8 +207,8 @@ async function downloadMasterDeepCSV() {
   a.click();
   a.remove();
   window.URL.revokeObjectURL(url);
+  showStatus("Download started!", "success");
 }
-
     
 function showStatus(message, type = "secondary", showSpinner = false) {
   const status = document.getElementById("status");
