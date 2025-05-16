@@ -54,7 +54,26 @@
 </div>
     <pre id="output" class="bg-white border rounded p-3" style="max-height: 400px; overflow: auto;"></pre>
   </div>
-  <!-- Scripts -->
+<div class="mb-4">
+  <h4>Download All Versions of a Master Release</h4>
+  <div class="input-group mb-2">
+    <input type="text" id="masterId" class="form-control" placeholder="Enter master release ID">
+    <button onclick="downloadMasterCSV()" class="btn btn-secondary">Download Master CSV</button>
+  </div>
+</div>
+<!-- Scripts -->
+<script>
+  function downloadMasterCSV() {
+    const id = document.getElementById('masterId').value;
+    if (!id) {
+      alert("Please enter a master release ID");
+      return;
+    }
+    window.location.href = `/download_master_csv?id=${id}`;
+  }
+</script>
+
+
   <script>
     async function fetchRelease() {
       const id = document.getElementById('releaseId').value;
