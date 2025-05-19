@@ -199,6 +199,7 @@ async function downloadMasterDeepCSV() {
     const proceed = confirm(data.warning);
     if (proceed) {
       showStatus("Generating deep CSV (this may take a minute)...", "info", true);
+      gtag('event', 'master_deep_download', {'event_category': 'Downloads','event_label': `Master ${id}`});
       window.location.href = `/download_master_deep_csv?id=${id}&force=true`;
     } else {
       hideStatus();
