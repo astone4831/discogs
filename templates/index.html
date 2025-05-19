@@ -130,7 +130,7 @@
         return;
       }
 
-      gtag('event', 'artist_csv', {'event_category':'Download', 'event_label':query});
+
       showStatus("Preparing your CSV...", "info", true);
       try {
         const res = await fetch(`/download_artist_csv?id=${id}`);
