@@ -23,6 +23,21 @@ class discogs():
             return obj.isoformat()
         raise TypeError ("Type %s not serializable" % type(obj))
 
+        @staticmethod
+    def convert_mm_ss_to_time(time_string):
+        if len(time_string)<=4:
+            try:
+                time_object = datetime.strptime(time_string, "%M:%S").time()
+                return time_object
+            except ValueError:
+                return None
+        else:
+            try:
+                time_object = datetime.strptime(time_string, "%H:%M:%S").time()
+                return time_object
+            except ValueError:
+                return None
+
     def __init__(self):
         self.url_ = "https://api.discogs.com/"
         self.t = 10
@@ -131,7 +146,7 @@ class discogs():
         release_id = []
         for d in data.get('tracklist', []):
             tracks.append(d.get('title', ''))
-            duration.append(d.get('duration', ''))
+            duration.append(xx.convert_mm_ss_to_time(d['duration']))
             position.append(d.get('position', ''))
             url.append(data.get('uri', 'not found'))
             title.append(data.get('title', 'not found'))
