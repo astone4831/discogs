@@ -16,8 +16,8 @@
 </script>
   
 <body class="bg-light">
-  <div class="container py-5">
-    <h1 class="mb-4">Discogs Explorer</h1>
+  <div class="container py-5", style="max-width: 800px;">
+    <h1 class="mb-4 text-center">Discogs Explorer</h1>
         <label for="artistNameInput" class="form-label">Search Artist by Name</label>
     <input type="text" id="artistNameInput" class="form-control" placeholder="e.g. Taylor Swift" oninput="searchArtistName()">
     <ul id="artistSuggestions" class="list-group mt-1" style="position: absolute; z-index: 999; max-height: 200px; overflow-y: auto;"></ul>
@@ -245,5 +245,12 @@ function hideStatus() {
 }
 
   </script>
+<div id="status" class="alert alert-secondary d-flex align-items-center" role="alert" style="display: none;">
+  <div id="statusSpinner" class="spinner-border spinner-border-sm me-2" role="status" style="display: none;"></div>
+  <div id="statusText">Loading...</div>
+</div>
+<pre id="output" class="bg-white border rounded p-3" style="max-height: 400px; overflow: auto;"></pre>
+</div>
+</body>
 </body>
 </html>
