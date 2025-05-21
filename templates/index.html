@@ -16,7 +16,7 @@
 </script>
   
 <body class="bg-light">
-  <div class="container py-5", style="max-width: 800px;">
+  <div class="container py-5" style="max-width: 800px;">
     <h1 class="mb-4 text-center">Discogs Explorer</h1>
         <label for="artistNameInput" class="form-label">Search Artist by Name</label>
     <input type="text" id="artistNameInput" class="form-control" placeholder="e.g. Taylor Swift" oninput="searchArtistName()">
@@ -62,6 +62,11 @@
               <input class="form-check-input" type="checkbox" id="colCatno" value="catno" checked>
               <label class="form-check-label" for="colCatno">Cat No</label>
             </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="colFormat" value="format" checked>
+              <label class="form-check-label" for="colFormat">Format</label>
+            </div>
+
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="checkbox" id="colFormat" value="format" checked>
               <label class="form-check-label" for="colFormat">Format</label>
