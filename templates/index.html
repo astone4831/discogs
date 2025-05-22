@@ -16,7 +16,7 @@
 </script>
   
 <body class="bg-light">
-  <div class="container py-5" style="max-width: 800px;">
+  <div class="container py-5", style="max-width: 800px;">
     <h1 class="mb-4 text-center">Discogs Explorer</h1>
         <label for="artistNameInput" class="form-label">Search Artist by Name</label>
     <input type="text" id="artistNameInput" class="form-control" placeholder="e.g. Taylor Swift" oninput="searchArtistName()">
@@ -30,10 +30,7 @@
         <input type="text" id="releaseId" class="form-control" placeholder="Enter release ID">
         <button onclick="fetchRelease()" class="btn btn-primary">Search</button>
       </div>
-      <div class="selections">
-      <input type="checkbox" id="html" name="fav_language" value="HTML">
-      <label for="html">HTML</label><br>
-      </div>
+
     </div>
 
   <div class="mb-3">
@@ -52,6 +49,7 @@
       <div class="input-group mb-2">
         <input type="text" id="csvReleaseId" class="form-control" placeholder="Enter release ID">
         <button onclick="downloadCSV()" class="btn btn-success">Download CSV</button>
+	  </div>
        <div class="mb-3">
             <h5>Select CSV Columns</h5>
             <div class="form-check form-check-inline">
@@ -67,13 +65,8 @@
               <label class="form-check-label" for="colFormat">Format</label>
             </div>
 
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="checkbox" id="colFormat" value="format" checked>
-              <label class="form-check-label" for="colFormat">Format</label>
-            </div>
-
         </div>
-      </div>
+     
     </div>
     <!-- Download Artist Discography -->
     <div class="mb-4">
