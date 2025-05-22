@@ -23,7 +23,7 @@ class discogs():
             return obj.isoformat()
         raise TypeError ("Type %s not serializable" % type(obj))
 
-        @staticmethod
+    @staticmethod
     def convert_mm_ss_to_time(time_string):
         if len(time_string)<=4:
             try:
