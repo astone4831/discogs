@@ -151,6 +151,7 @@ class discogs():
             df = df[[col for col in selected_cols if col in df.columns]]
     
         os.makedirs("output", exist_ok=True)
+        path = f"output/{data['id']}_release.csv"
         df.to_csv(f"output/{data['id']}_release.csv", index=False)
     
         if return_df:
