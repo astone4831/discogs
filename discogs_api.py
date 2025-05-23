@@ -130,59 +130,33 @@ class discogs():
     def pagination(self, r):
         pass
 
-    def parsing_release_lists(self, data, return_df=False):
-        url = []
-        year = []
-        labels = []
-        format_type = []
-        format_qty = []
-        catno = []
-        tracks = []
-        duration = []
-        position = []
-        notes = []
-        title = []
-        artist = []
-        release_id = []
-        for d in data.get('tracklist', []):
-            tracks.append(d.get('title', ''))
-            duration.append(xx.convert_mm_ss_to_time(d['duration']))
-            position.append(d.get('position', ''))
-            url.append(data.get('uri', 'not found'))
-            title.append(data.get('title', 'not found'))
-            artist.append(data.get('artists_sort', 'not found'))
-            release_id.append(data.get('id'))
-            try:
-                labels.append(data['labels'][0]['name'])
-            except:
-                labels.append('not found')
-            try:
-                catno.append(data['labels'][0]['catno'])
-            except:
-                catno.append('not found')
-            try:
-                format_type.append(data['formats'][0]['name'])
-            except:
-                format_type.append('not found')
-            try:
-                format_qty.append(data['formats'][0]['qty'])
-            except:
-                format_qty.append('not found')
-            try:
-                notes.append(data.get('notes', 'no notes'))
-            except:
-                notes.append('no notes')
-        d = list(zip(release_id, artist, title, url, labels, catno, format_type, format_qty, tracks, duration, position, notes))
-        df = pd.DataFrame(d, columns=[
-            'release_id', 'artist', 'release_title', 'url', 'label', 'catno',
-            'format', 'format_qty', 'track_title', 'duration', 'position', 'notes'
-        ])
-        if return_df:
-            return df
-        # Original behavior for single release:
-        file = data['id']
-        df.to_csv(f'output/{file}.csv', index=False)
-        return f'output/{file}.csv'
+    def parsing_release_lists(self, data, return_df=False, selected_cols=None):
+    rows = []
+    for d in data.get('tracklist', []):
+        rows.append({
+            'track_title': d.get('title'),
+            'duration': d.get('duration'),
+            'position': d.get('position'),
+            'release_title': data.get('title'),
+            'artist': data.get('artists_sort'),
+            'label': data.get('labels', [{}])[0].get('name'),
+            'format': data.get('formats', [{}])[0].get('name'),
+            'catno': data.get('labels', [{}])[0].get('catno'),
+            'release_url': data.get('uri'),
+        })
+
+    df = pd.DataFrame(rows)
+
+    if selected_cols:
+        df = df[[col for col in selected_cols if col in df.columns]]
+
+    path = f"output/{data['id']}_custom.csv"
+    df.to_csv(path, index=False)
+
+    if return_df:
+        return df
+    return path
+
             
     def export_master_release_details_csv(self, master_id):
         print(f"Starting deep pull for master ID: {master_id}")
