@@ -131,31 +131,31 @@ class discogs():
         pass
 
     def parsing_release_lists(self, data, return_df=False, selected_cols=None):
-    rows = []
-    for d in data.get('tracklist', []):
-        rows.append({
-            'track_title': d.get('title'),
-            'duration': d.get('duration'),
-            'position': d.get('position'),
-            'release_title': data.get('title'),
-            'artist': data.get('artists_sort'),
-            'label': data.get('labels', [{}])[0].get('name'),
-            'format': data.get('formats', [{}])[0].get('name'),
-            'catno': data.get('labels', [{}])[0].get('catno'),
-            'release_url': data.get('uri'),
-        })
-
-    df = pd.DataFrame(rows)
-
-    if selected_cols:
-        df = df[[col for col in selected_cols if col in df.columns]]
-
-    path = f"output/{data['id']}_custom.csv"
-    df.to_csv(path, index=False)
-
-    if return_df:
-        return df
-    return path
+        rows = []
+        for d in data.get('tracklist', []):
+            rows.append({
+                'track_title': d.get('title'),
+                'duration': d.get('duration'),
+                'position': d.get('position'),
+                'release_title': data.get('title'),
+                'artist': data.get('artists_sort'),
+                'label': data.get('labels', [{}])[0].get('name'),
+                'format': data.get('formats', [{}])[0].get('name'),
+                'catno': data.get('labels', [{}])[0].get('catno'),
+                'release_url': data.get('uri'),
+            })
+    
+        df = pd.DataFrame(rows)
+    
+        if selected_cols:
+            df = df[[col for col in selected_cols if col in df.columns]]
+    
+        path = f"output/{data['id']}_custom.csv"
+        df.to_csv(path, index=False)
+    
+        if return_df:
+            return df
+        return path
 
             
     def export_master_release_details_csv(self, master_id):
