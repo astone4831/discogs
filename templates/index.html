@@ -106,6 +106,172 @@
 
   <!-- JavaScript Functions -->
   <script>
+<!-- Scripts -->
+<script>
+  function downloadMasterCSV() {
+    const id = document.getElementById('masterId').value;
+    if (!id) {
+      alert("Please enter a master release ID");
+      return;
+    }
+    window.location.href = /download_master_csv?id=${id};
+  }
+</script>
+
+
+  <script>
+    async function fetchRelease() {
+      const id = document.getElementById('releaseId').value;
+      const res = await fetch(/release?id=${id});
+      const data = await res.json();
+      document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    }
+    async function fetchArtist() {
+      const id = document.getElementById('artistId').value;
+      showStatus("Fetching artist releases...", "info", true);
+      try {
+        const res = await fetch(/artist_releases?id=${id});
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+         showStatus("Artist releases loaded!", "success");
+        } else {
+          showStatus("Error: " + (data.error || "Unknown error"), "danger");
+        }
+      } catch (err) {
+        showStatus("Unexpected error: " + err.message, "danger");
+      }
+    }
+    function downloadCSV() {
+      const id = document.getElementById('csvReleaseId').value;
+      if (!id) return;
+      window.location.href = /download_csv?id=${id};
+    }
+    async function downloadArtistCSV() {
+      const id = document.getElementById('artistCsvId').value;
+      if (!id) {
+        showStatus("Please enter an artist ID", "warning");
+        return;
+      }
+
+
+      showStatus("Preparing your CSV...", "info", true);
+      try {
+        const res = await fetch(/download_artist_csv?id=${id});
+        if (!res.ok) {
+          const error = await res.json();
+          showStatus("Error: " + error.error, "danger");
+          return;
+        }
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = artist_${id}.csv;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        showStatus("Download started!", "success");
+      } catch (err) {
+        showStatus("Unexpected error: " + err.message, "danger");
+      }
+    }
+
+async function searchArtistName() {
+  const input = document.getElementById('artistNameInput');
+  const suggestions = document.getElementById('artistSuggestions');
+  const query = input.value;
+  if (query.length < 2) {
+    suggestions.innerHTML = '';
+    return;
+  }
+  const res = await fetch(/search_artist?q=${encodeURIComponent(query)});
+  const artists = await res.json();
+  console.log("Autocomplete results:", artists); // <--- debug line
+  suggestions.innerHTML = '';
+  if (!artists.length) {
+    const li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.textContent = 'No results';
+    suggestions.appendChild(li);
+    return;
+  }
+  artists.forEach(artist => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item list-group-item-action';
+    li.textContent = ${artist.name} (ID: ${artist.id});
+    li.onclick = () => {
+      document.getElementById('artistId').value = artist.id;
+      suggestions.innerHTML = '';
+      input.value = artist.name;
+    };
+    suggestions.appendChild(li);
+  });
+}
+
+async function downloadMasterDeepCSV() {
+  const id = document.getElementById('masterDeepId').value;
+  if (!id) {
+    showStatus("Enter a master ID", "warning");
+    return;
+  }
+  showStatus("Checking master size...", "info", true);
+  const res = await fetch(/download_master_deep_csv?id=${id});
+  if (res.status === 202) {
+    const data = await res.json();
+    const proceed = confirm(data.warning);
+    if (proceed) {
+      showStatus("Generating deep CSV (this may take a minute)...", "info", true);
+      gtag('event', 'master_deep_download', {'event_category': 'Downloads','event_label': Master ${id}});
+      window.location.href = /download_master_deep_csv?id=${id}&force=true;
+    } else {
+      hideStatus();
+    }
+    return;
+  }
+  if (!res.ok) {
+    const err = await res.json();
+    showStatus("Error: " + err.error, "danger");
+    return;
+  }
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = master_${id}_deep.csv;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+  showStatus("Download started!", "success");
+}
+    
+function showStatus(message, type = "secondary", showSpinner = false) {
+  const status = document.getElementById("status");
+  const statusText = document.getElementById("statusText");
+  const spinner = document.getElementById("statusSpinner");
+  status.className = alert alert-${type} d-flex align-items-center;
+  statusText.innerText = message;
+  if (showSpinner) {
+    spinner.style.display = "inline-block";
+  } else {
+    spinner.style.display = "none";
+  }
+  status.style.display = "flex";
+}
+function hideStatus() {
+  document.getElementById("status").style.display = "none";
+}
+
+  </script>
+    <div id="status" class="alert alert-secondary d-flex align-items-center" role="alert" style="display: none;">
+      <div id="statusSpinner" class="spinner-border spinner-border-sm me-2" role="status" style="display: none;"></div>
+      <div id="statusText">Loading...</div>
+    </div>
+    <pre id="output" class="bg-white border rounded p-3" style="max-height: 400px; overflow: auto;"></pre>
+    </div>
+    
     function getSelectedCols() {
       const checkboxes = document.querySelectorAll('input.form-check-input');
       return Array.from(checkboxes)
