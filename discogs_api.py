@@ -150,8 +150,8 @@ class discogs():
         if selected_cols:
             df = df[[col for col in selected_cols if col in df.columns]]
     
-        path = f"output/{data['id']}_custom.csv"
-        df.to_csv(path, index=False)
+        os.makedirs("output", exist_ok=True)
+        df.to_csv(f"output/{data['id']}_release.csv", index=False)
     
         if return_df:
             return df
