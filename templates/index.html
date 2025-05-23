@@ -142,10 +142,14 @@
   }
 
   function downloadCSV() {
-    const id = document.getElementById('csvReleaseId').value;
-    if (!id) return;
-    window.location.href = `/download_csv?id=${id}`;
-  }
+      const id = document.getElementById('csvReleaseId').value;
+      const selectedCols = getSelectedCols();
+      if (!id || selectedCols.length === 0) {
+        alert("Please enter a release ID and select at least one column");
+        return;
+      }
+      window.location.href = `/download_csv?id=${id}&cols=${selectedCols.join(',')}`;
+    }
 
   async function downloadArtistCSV() {
     const id = document.getElementById('artistCsvId').value;
