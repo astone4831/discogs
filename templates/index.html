@@ -263,6 +263,12 @@ function showStatus(message, type = "secondary", showSpinner = false) {
 function hideStatus() {
   document.getElementById("status").style.display = "none";
 }
+        function getSelectedCols() {
+      const checkboxes = document.querySelectorAll('input.form-check-input');
+      return Array.from(checkboxes)
+              .filter(cb => cb.checked)
+              .map(cb => cb.value);
+        }
 
   </script>
     <div id="status" class="alert alert-secondary d-flex align-items-center" role="alert" style="display: none;">
@@ -272,14 +278,6 @@ function hideStatus() {
     <pre id="output" class="bg-white border rounded p-3" style="max-height: 400px; overflow: auto;"></pre>
     </div>
     
-    function getSelectedCols() {
-      const checkboxes = document.querySelectorAll('input.form-check-input');
-      return Array.from(checkboxes)
-              .filter(cb => cb.checked)
-              .map(cb => cb.value);
-        }
-
-  </script>
 </body>
 </html>
 
