@@ -106,8 +106,13 @@
 
   <!-- JavaScript Functions -->
   <script>
-    // Insert your existing JavaScript functions here
-    // (fetchRelease, fetchArtist, downloadCSV, downloadArtistCSV, etc.)
+    function getSelectedCols() {
+      const checkboxes = document.querySelectorAll('input.form-check-input');
+      return Array.from(checkboxes)
+              .filter(cb => cb.checked)
+              .map(cb => cb.value);
+        }
+
   </script>
 </body>
 </html>
