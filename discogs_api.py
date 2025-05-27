@@ -134,6 +134,7 @@ class discogs():
         rows = []
         for d in data.get('tracklist', []):
             rows.append({
+                'release_id': data['id'],
                 'track_title': d.get('title'),
                 'duration': d.get('duration'),
                 'position': d.get('position'),
@@ -143,6 +144,7 @@ class discogs():
                 'format': data.get('formats', [{}])[0].get('name'),
                 'catno': data.get('labels', [{}])[0].get('catno'),
                 'release_url': data.get('uri'),
+                'notes':data.get('notes')
             })
     
         df = pd.DataFrame(rows)
