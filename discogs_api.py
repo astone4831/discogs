@@ -140,7 +140,7 @@ class discogs():
                 'release_id': data['id'],
                 'track_title': d.get('title'),
                 'duration': self.convert_to_minutes(d.get('duration')),
-                'position': d.get('position'),
+                'position': f"'{d.get('position')}",
                 'release_title': data.get('title'),
                 'artist': data.get('artists_sort'),
                 'label': data.get('labels', [{}])[0].get('name'),
