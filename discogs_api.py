@@ -60,6 +60,26 @@ class discogs():
         #parsing_release_lists(r.json, release_id)
         return r.json()
 
+    def get_all_label_release(self, label_id):
+        releases = []
+        page = 1
+        per_page = 100
+        while True:
+            url = f"{self.url_}artists/{artist_id}/releases"
+            params = {
+                "per_page": per_page,
+                "page": page
+            }
+            r = requests.get(url, headers=self.headers, params=params)
+            self.rate_check(r.headers)
+            if r.status_code != 200:
+                raise Exception(f"Discogs API Error {r.status_code}: {r.text}")
+            data = r.json()
+            releases.extend(data.get('releases', []))
+            if page >= data['pagination']['pages']:
+                break
+            page += 1
+        return releases
     
     def export_master_versions_csv(self, master_id):
         url = f"{self.url_}masters/{master_id}/versions?per_page=100"
