@@ -139,7 +139,7 @@ class discogs():
             rows.append({
                 'release_id': data['id'],
                 'track_title': d.get('title'),
-                'duration': self.convert_mm_ss_to_time(d.get('duration')),
+                'duration': self.convert_to_minutes(d.get('duration')),
                 'position': d.get('position'),
                 'release_title': data.get('title'),
                 'artist': data.get('artists_sort'),
