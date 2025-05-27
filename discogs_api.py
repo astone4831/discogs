@@ -65,7 +65,7 @@ class discogs():
         page = 1
         per_page = 100
         while True:
-            url = f"{self.url_}artists/{artist_id}/releases"
+            url = f"{self.url_}label/{label_id}/releases"
             params = {
                 "per_page": per_page,
                 "page": page
