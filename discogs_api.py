@@ -24,19 +24,22 @@ class discogs():
         raise TypeError ("Type %s not serializable" % type(obj))
 
     @staticmethod
-    def convert_mm_ss_to_time(time_string):
-        if len(time_string)<=4:
-            try:
-                time_object = datetime.strptime(time_string, "%M:%S").time()
-                return time_object
-            except ValueError:
+    def convert_to_minutes(time_string):
+        try:
+            if ":" not in time_string:
                 return None
-        else:
-            try:
-                time_object = datetime.strptime(time_string, "%H:%M:%S").time()
-                return time_object
-            except ValueError:
+            parts = time_string.strip().split(":")
+            if len(parts) == 2:
+                minutes = int(parts[0])
+                seconds = int(parts[1])
+            elif len(parts) == 3:
+                minutes = int(parts[0]) * 60 + int(parts[1])
+                seconds = int(parts[2])
+            else:
                 return None
+            return round(minutes + seconds / 60, 2)  # returns e.g., 1.75
+        except Exception:
+            return None
 
     def __init__(self):
         self.url_ = "https://api.discogs.com/"
@@ -136,7 +139,7 @@ class discogs():
             rows.append({
                 'release_id': data['id'],
                 'track_title': d.get('title'),
-                'duration': f"'{self.convert_mm_ss_to_time(d.get('duration'))}",
+                'duration': self.convert_mm_ss_to_time(d.get('duration')),
                 'position': d.get('position'),
                 'release_title': data.get('title'),
                 'artist': data.get('artists_sort'),
