@@ -134,6 +134,13 @@
     document.getElementById('output').textContent = JSON.stringify(data, null, 2);
   }
 
+  async function fetchLabel() {
+    const id = document.getElementById('LabelId').value;
+    const res = await fetch(`/label?id=${id}`);
+    const data = await res.json();
+    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+  }
+  
   async function fetchArtist() {
     const id = document.getElementById('artistId').value;
     showStatus("Fetching artist releases...", "info", true);
