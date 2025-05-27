@@ -154,7 +154,7 @@ class discogs():
 
     def parsing_release_lists(self, data, return_df=False, selected_cols=None):
         rows = []
-        for d in data.get('tracklist', []):
+        for d in data.get('tracklist', []):#this needs to be position, title, duration also add country of origin
             rows.append({
                 'release_id': data['id'],
                 'track_title': d.get('title'),
