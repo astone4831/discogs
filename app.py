@@ -26,6 +26,14 @@ def artist_releases():
     data = dc.artist_releases(artist_id)
     return jsonify(data)
 
+@app.route('/label_releases')
+def label_releases():
+    label_id = request.args.get('id')
+    if not label_id:
+        return jsonify({'error': 'No label ID provided'}), 400
+    data = dc.artist_releases(label_id)
+    return jsonify(data)
+
 @app.route('/env_check')
 def env_check():
     return jsonify({
