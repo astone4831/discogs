@@ -150,17 +150,17 @@ class discogs():
                 self.t = 60
 
     def search_artist_and_release(self, artist_name, release_title):
-        response = self.get(f"/database/search", params={
-            'artist': artist_name,
-            'release_title': release_title,
-            'type': 'release'
-        })
-        return [{
-            'artist': r.get('artist'),
-            'title': r.get('title'),
-            'artist_id': r.get('artist_id'),  #I dont think this works...
-            'release_id': r.get('id')
-        } for r in response.get('results', [])]
+        params = {
+            "artist": artist_name,
+            "release_title": release_title,
+            "type": "release",
+            "per_page": 10,
+            "key": self.key,
+            "secret": self.secret
+        }
+        r = requests.get(f"{self.url_}database/search", headers=self.headers, params=params)
+        r.raise_for_status()
+        return r.json().get("results", [])
 
     def parsing_release_lists(self, data, return_df=False, selected_cols=None):
         rows = []
