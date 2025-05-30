@@ -26,6 +26,20 @@ def artist_releases():
     data = dc.artist_releases(artist_id)
     return jsonify(data)
 
+@app.route('/search_artist_release')
+def search_artist_release():
+    query = request.args.get('q')
+    if not query:
+        return jsonify([])
+
+    parts = query.strip().split(' ', 1)
+    if len(parts) != 2:
+        return jsonify([])
+
+    artist_query, release_query = parts
+    results = dc.search_artist_release(artist_query, release_query)
+    return jsonify(results)
+
 @app.route('/label_releases')
 def label_releases():
     label_id = request.args.get('id')
