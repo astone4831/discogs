@@ -150,15 +150,16 @@ class discogs():
                 self.t = 60
 
     def search_artist_and_release(self, artist_name, release_title):
+        # Build a single “q” param for full-text search
+        full_query = f"{artist_name} {release_title}".strip()
         params = {
-            "artist": artist_name,
-            "release_title": release_title,
+            "q": full_query,
             "type": "release",
             "per_page": 10,
             "key": self.key,
             "secret": self.secret
         }
-        r = requests.get(f"{self.url_}database/search", headers=self.headers, params=params)
+        r = requests.get(f"{self.url_}database/search", params=params)
         r.raise_for_status()
         return r.json().get("results", [])
 
