@@ -149,7 +149,7 @@ class discogs():
             if self.t >= 60:
                 self.t = 60
 
-    def search_artist_release(self, artist_name, release_title):
+    def search_artist_and_release(self, artist_name, release_title):
         response = self.get(f"/database/search", params={
             'artist': artist_name,
             'release_title': release_title,
