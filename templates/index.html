@@ -21,38 +21,18 @@
     <h1 class="mb-4 text-center">Discogs Explorer</h1>
 
     <!-- Artist Autocomplete -->
-    <label for="artistNameInput" class="form-label">Search Artist by Name</label>
+    <div class="mb-4">
+	<label for="artistNameInput" class="form-label">Search Artist by Name</label>
     <input type="text" id="artistNameInput" class="form-control" placeholder="e.g. Taylor Swift" oninput="searchArtistName()">
     <ul id="artistSuggestions" class="list-group mt-1" style="position: absolute; z-index: 999; max-height: 200px; overflow-y: auto;"></ul>
-
-    <!-- Release Search -->
-    <div class="mb-4 mt-4">
-      <h4>Search by Release ID</h4>
-      <div class="input-group">
-        <input type="text" id="releaseId" class="form-control" placeholder="Enter release ID">
-        <button onclick="fetchRelease()" class="btn btn-primary">Search</button>
-      </div>
+	</div>
+	
+	<div class="mb-4">
+	<label for="comboSearch" class="form-label">Search Artist + Release</label>
+	<input type="text" id="comboSearch" class="form-control" placeholder="e.g. Taylor Swift 1989" oninput="searchArtistRelease()">
+	<ul id="comboSuggestions" class="list-group mt-1"></ul>
     </div>
-
-    <!-- Artist Releases Search -->
-    <div class="mb-4">
-      <h4>Search Releases by Artist ID</h4>
-      <div class="input-group">
-        <input type="text" id="artistId" class="form-control" placeholder="Enter artist ID">
-        <button onclick="fetchArtist()" class="btn btn-primary">Search</button>
-      </div>
-    </div>
-
-    <!-- Label Releases Search -->
-    <div class="mb-4">
-      <h4>Search Releases by Label ID</h4>
-      <div class="input-group">
-        <input type="text" id="labelId" class="form-control" placeholder="Enter label ID">
-        <button onclick="fetchLabel()" class="btn btn-primary">Search</button>
-      </div>
-    </div>
-
-    
+	
     <!-- CSV Output for Release -->
     <div class="mb-4">
       <h4>CSV Output for Release</h4>
@@ -158,7 +138,41 @@
       showStatus("Unexpected error: " + err.message, "danger");
     }
   }
+	async function searchArtistRelease() {
+		  const input = document.getElementById('comboSearch');
+		  const suggestions = document.getElementById('comboSuggestions');
+		  const query = input.value;
+		  if (query.length < 3) {
+			suggestions.innerHTML = '';
+			return;
+		  }
 
+		  const res = await fetch(`/search_artist_release?q=${encodeURIComponent(query)}`);
+		  const data = await res.json();
+		  suggestions.innerHTML = '';
+
+		  if (!data.length) {
+			const li = document.createElement('li');
+			li.className = 'list-group-item';
+			li.textContent = 'No results';
+			suggestions.appendChild(li);
+			return;
+		  }
+
+		  data.forEach(item => {
+			const li = document.createElement('li');
+			li.className = 'list-group-item list-group-item-action';
+			li.textContent = `${item.artist} – ${item.title}`;
+			li.onclick = () => {
+			  document.getElementById('artistId').value = item.artist_id;
+			  document.getElementById('releaseId').value = item.release_id;
+			  suggestions.innerHTML = '';
+			  input.value = `${item.artist} – ${item.title}`;
+			};
+			suggestions.appendChild(li);
+		  });
+
+	
   function downloadCSV() {
       const id = document.getElementById('csvReleaseId').value;
       const selectedCols = getSelectedCols();
@@ -301,4 +315,3 @@
 
 </body>
 </html>
-
