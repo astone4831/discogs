@@ -120,54 +120,50 @@
     document.getElementById('output').textContent = JSON.stringify(data, null, 2);
   }
   
-function debounce(fn, ms = 300) {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => fn(...args), ms);
-  };
-}
+<script>
+  async function comboSearch() {
+    const input = document.getElementById("comboSearch");
+    const list  = document.getElementById("comboSuggestions");
+    const q     = input.value.trim();
 
-// STEP 3: The actual fetch function
-async function searchArtistRelease() {
-  const input = document.getElementById('comboSearch');
-  const suggestions = document.getElementById('comboSuggestions');
-  const query = input.value.trim();
-  if (query.length < 3) {
-    suggestions.innerHTML = '';
-    return;
+    if (q.length < 3 || q.indexOf(" ") < 0) {
+      list.innerHTML = "";
+      return;
+    }
+
+    const res  = await fetch(`/search_artist_release?q=${encodeURIComponent(q)}`);
+    const data = await res.json();  // always JSON array
+
+    list.innerHTML = "";
+    if (data.length === 0) {
+      list.innerHTML = '<li class="list-group-item">No results</li>';
+      return;
+    }
+
+    data.forEach(item => {
+      const li = document.createElement("li");
+      li.className = "list-group-item list-group-item-action";
+      li.textContent = `${item.artist} – ${item.title}`;
+      li.onclick = () => {
+        document.getElementById("artistId").value  = item.artist_id;
+        document.getElementById("releaseId").value = item.id;
+        input.value = `${item.artist} – ${item.title}`;
+        list.innerHTML = "";
+      };
+      list.appendChild(li);
+    });
   }
 
-  // Properly escape colon and spaces
-  const res = await fetch(`/search_artist_release?q=${encodeURIComponent(query)}`);
-  if (!res.ok) {
-    console.error("Server error:", await res.text());
-    return;
-  }
-
-  const data = await res.json();
-  suggestions.innerHTML = '';
-
-  if (!data.length) {
-    suggestions.innerHTML = '<li class="list-group-item">No results</li>';
-    return;
-  }
-
-  data.forEach(item => {
-    const li = document.createElement('li');
-    li.className = 'list-group-item list-group-item-action';
-    li.textContent = `${item.artist} — ${item.title}`;
-    li.onclick = () => {
-      document.getElementById('artistId').value  = item.artist_id;
-      document.getElementById('releaseId').value = item.release_id;
-      suggestions.innerHTML = '';
-      input.value = `${item.artist} — ${item.title}`;
+  // debounce to avoid hammering the API
+  function debounce(fn, ms = 300) {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), ms);
     };
-    suggestions.appendChild(li);
-  });
-}
+  }
+  const debouncedComboSearch = debounce(comboSearch, 300);
 
-const debouncedSearchArtistRelease = debounce(searchArtistRelease);
 	
 	
   function downloadCSV() {
