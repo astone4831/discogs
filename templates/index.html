@@ -21,11 +21,15 @@
     <h1 class="mb-4 text-center">Discogs Explorer</h1>
 
     <!-- Artist Autocomplete -->
-<div class="mb-4">
-	<label for="comboSearch" class="form-label">Search Artist + Release</label>
-	<input type="text" id="comboSearch" class="form-control" placeholder="e.g. Taylor Swift 1989" oninput="searchArtistRelease()">
+	<label for="comboSearch">Search Artist + Release</label>
+	<input
+	  type="text"
+	  id="comboSearch"
+	  class="form-control"
+	  placeholder="e.g. Taylor Swift 1989"
+	  oninput="debouncedSearchArtistRelease()"
+	>
 	<ul id="comboSuggestions" class="list-group mt-1"></ul>
-    </div>
 	
     <!-- CSV Output for Release -->
     <div class="mb-4">
@@ -116,56 +120,54 @@
     document.getElementById('output').textContent = JSON.stringify(data, null, 2);
   }
   
-  async function fetchArtist() {
-    const id = document.getElementById('artistId').value;
-    showStatus("Fetching artist releases...", "info", true);
-    try {
-      const res = await fetch(`/artist_releases?id=${id}`);
-      const data = await res.json();
-      if (res.ok) {
-        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-        showStatus("Artist releases loaded!", "success");
-      } else {
-        showStatus("Error: " + (data.error || "Unknown error"), "danger");
-      }
-    } catch (err) {
-      showStatus("Unexpected error: " + err.message, "danger");
-    }
+function debounce(fn, ms = 300) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), ms);
+  };
+}
+
+// STEP 3: The actual fetch function
+async function searchArtistRelease() {
+  const input = document.getElementById('comboSearch');
+  const suggestions = document.getElementById('comboSuggestions');
+  const query = input.value.trim();
+  if (query.length < 3) {
+    suggestions.innerHTML = '';
+    return;
   }
-	async function searchArtistRelease() {
-		  const input = document.getElementById('comboSearch');
-		  const suggestions = document.getElementById('comboSuggestions');
-		  const query = input.value;
-		  if (query.length < 3) {
-			suggestions.innerHTML = '';
-			return;
-		  }
 
-		  const res = await fetch(`/search_artist_release?q=${encodeURIComponent(query)}`);
-		  const data = await res.json();
-		  suggestions.innerHTML = '';
+  // Properly escape colon and spaces
+  const res = await fetch(`/search_artist_release?q=${encodeURIComponent(query)}`);
+  if (!res.ok) {
+    console.error("Server error:", await res.text());
+    return;
+  }
 
-		  if (!data.length) {
-			const li = document.createElement('li');
-			li.className = 'list-group-item';
-			li.textContent = 'No results';
-			suggestions.appendChild(li);
-			return;
-		  }
+  const data = await res.json();
+  suggestions.innerHTML = '';
 
-		  data.forEach(item => {
-			const li = document.createElement('li');
-			li.className = 'list-group-item list-group-item-action';
-			li.textContent = `${item.artist} – ${item.title}`;
-			li.onclick = () => {
-			  document.getElementById('artistId').value = item.artist_id;
-			  document.getElementById('releaseId').value = item.release_id;
-			  suggestions.innerHTML = '';
-			  input.value = `${item.artist} – ${item.title}`;
-			};
-			suggestions.appendChild(li);
-		  });
-	}
+  if (!data.length) {
+    suggestions.innerHTML = '<li class="list-group-item">No results</li>';
+    return;
+  }
+
+  data.forEach(item => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item list-group-item-action';
+    li.textContent = `${item.artist} — ${item.title}`;
+    li.onclick = () => {
+      document.getElementById('artistId').value  = item.artist_id;
+      document.getElementById('releaseId').value = item.release_id;
+      suggestions.innerHTML = '';
+      input.value = `${item.artist} — ${item.title}`;
+    };
+    suggestions.appendChild(li);
+  });
+}
+
+const debouncedSearchArtistRelease = debounce(searchArtistRelease);
 	
 	
   function downloadCSV() {
