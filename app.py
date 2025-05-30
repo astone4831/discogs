@@ -26,16 +26,26 @@ def artist_releases():
     data = dc.artist_releases(artist_id)
     return jsonify(data)
 
-@app.route('/search_artist_release')
+@app.route("/search_artist_release")
 def search_artist_release():
-    query = request.args.get('q', '')
-    if not query:
-        return jsonify({'error': 'Missing query'}), 400
+    q = request.args.get("q", "").strip()
+    if not q or q.split(" ",1).__len__() < 2:
+        return jsonify([])
+
+    # split on first space: "ArtistName ReleaseTitle"
+    artist_part, release_part = q.split(" ", 1)
     try:
-        results = dc.search_artist_and_release(query)
-        return jsonify(results)
+        results = dc.search_artist_and_release(artist_part, release_part)
+        # only send back what we need:
+        cleaned = [{
+            "artist": r.get("artist"),          # or r["title"] if necessary
+            "title": r.get("title"),
+            "artist_id": r.get("id_artist"),    # if Discogs returns this
+            "release_id": r.get("id")
+        } for r in results]
+        return jsonify(cleaned)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify([]), 500
 
 @app.route('/label_releases')
 def label_releases():
