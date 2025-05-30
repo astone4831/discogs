@@ -26,22 +26,6 @@ def artist_releases():
     data = dc.artist_releases(artist_id)
     return jsonify(data)
 
-@app.route("/search_artist_release")
-def search_artist_release():
-    q = request.args.get("q", "").strip()
-    # require at least one space to split artist + release
-    if " " not in q:
-        return jsonify([])
-
-    artist_part, release_part = q.split(" ", 1)
-
-    try:
-        results = dc.search_artist_and_release(artist_part, release_part)
-        return jsonify(results)      # 200 OK + [] or [ {...}, ... ]
-    except Exception as e:
-        app.logger.error("search_artist_release failed", exc_info=e)
-        return jsonify([])           # still 200 OK + []
-
 @app.route('/label_releases')
 def label_releases():
     label_id = request.args.get('id')
