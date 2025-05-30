@@ -21,16 +21,38 @@
     <h1 class="mb-4 text-center">Discogs Explorer</h1>
 
     <!-- Artist Autocomplete -->
-	<label for="comboSearch">Search Artist + Release</label>
-	<input
-	  type="text"
-	  id="comboSearch"
-	  class="form-control"
-	  placeholder="e.g. Taylor Swift 1989"
-	  oninput="debouncedComboSearch()"
-	/>
-	<ul id="comboSuggestions" class="list-group mt-1"></ul>
-	
+    <label for="artistNameInput" class="form-label">Search Artist by Name</label>
+    <input type="text" id="artistNameInput" class="form-control" placeholder="e.g. Taylor Swift" oninput="searchArtistName()">
+    <ul id="artistSuggestions" class="list-group mt-1" style="position: absolute; z-index: 999; max-height: 200px; overflow-y: auto;"></ul>
+
+    <!-- Release Search -->
+    <div class="mb-4 mt-4">
+      <h4>Search by Release ID</h4>
+      <div class="input-group">
+        <input type="text" id="releaseId" class="form-control" placeholder="Enter release ID">
+        <button onclick="fetchRelease()" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+
+    <!-- Artist Releases Search -->
+    <div class="mb-4">
+      <h4>Search Releases by Artist ID</h4>
+      <div class="input-group">
+        <input type="text" id="artistId" class="form-control" placeholder="Enter artist ID">
+        <button onclick="fetchArtist()" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+
+    <!-- Label Releases Search -->
+    <div class="mb-4">
+      <h4>Search Releases by Label ID</h4>
+      <div class="input-group">
+        <input type="text" id="labelId" class="form-control" placeholder="Enter label ID">
+        <button onclick="fetchLabel()" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+
+    
     <!-- CSV Output for Release -->
     <div class="mb-4">
       <h4>CSV Output for Release</h4>
@@ -120,52 +142,23 @@
     document.getElementById('output').textContent = JSON.stringify(data, null, 2);
   }
   
-<script>
-  async function comboSearch() {
-    const input = document.getElementById("comboSearch");
-    const list  = document.getElementById("comboSuggestions");
-    const q     = input.value.trim();
-
-    if (q.length < 3 || q.indexOf(" ") < 0) {
-      list.innerHTML = "";
-      return;
+  async function fetchArtist() {
+    const id = document.getElementById('artistId').value;
+    showStatus("Fetching artist releases...", "info", true);
+    try {
+      const res = await fetch(`/artist_releases?id=${id}`);
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+        showStatus("Artist releases loaded!", "success");
+      } else {
+        showStatus("Error: " + (data.error || "Unknown error"), "danger");
+      }
+    } catch (err) {
+      showStatus("Unexpected error: " + err.message, "danger");
     }
-
-    const res  = await fetch(`/search_artist_release?q=${encodeURIComponent(q)}`);
-    const data = await res.json();  // always JSON array
-
-    list.innerHTML = "";
-    if (data.length === 0) {
-      list.innerHTML = '<li class="list-group-item">No results</li>';
-      return;
-    }
-
-    data.forEach(item => {
-      const li = document.createElement("li");
-      li.className = "list-group-item list-group-item-action";
-      li.textContent = `${item.artist} – ${item.title}`;
-      li.onclick = () => {
-        document.getElementById("artistId").value  = item.artist_id;
-        document.getElementById("releaseId").value = item.id;
-        input.value = `${item.artist} – ${item.title}`;
-        list.innerHTML = "";
-      };
-      list.appendChild(li);
-    });
   }
 
-  // debounce to avoid hammering the API
-  function debounce(fn, ms = 300) {
-    let t;
-    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn(...args), ms);
-    };
-  }
-  const debouncedComboSearch = debounce(comboSearch, 300);
-
-	
-	
   function downloadCSV() {
       const id = document.getElementById('csvReleaseId').value;
       const selectedCols = getSelectedCols();
