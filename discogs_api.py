@@ -149,8 +149,18 @@ class discogs():
             if self.t >= 60:
                 self.t = 60
 
-    def pagination(self, r):
-        pass
+    def search_artist_release(self, artist_name, release_title):
+        response = self.get(f"/database/search", params={
+            'artist': artist_name,
+            'release_title': release_title,
+            'type': 'release'
+        })
+        return [{
+            'artist': r.get('artist'),
+            'title': r.get('title'),
+            'artist_id': r.get('artist_id'),  #I dont think this works...
+            'release_id': r.get('id')
+        } for r in response.get('results', [])]
 
     def parsing_release_lists(self, data, return_df=False, selected_cols=None):
         rows = []
