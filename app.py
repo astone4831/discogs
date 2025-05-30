@@ -28,17 +28,14 @@ def artist_releases():
 
 @app.route('/search_artist_release')
 def search_artist_release():
-    query = request.args.get('q')
+    query = request.args.get('q', '')
     if not query:
-        return jsonify([])
-
-    parts = query.strip().split(' ', 1)
-    if len(parts) != 2:
-        return jsonify([])
-
-    artist_query, release_query = parts
-    results = dc.search_artist_release(artist_query, release_query)
-    return jsonify(results)
+        return jsonify({'error': 'Missing query'}), 400
+    try:
+        results = dc.search_artist_and_release(query)
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/label_releases')
 def label_releases():
