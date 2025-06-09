@@ -22,7 +22,7 @@
 
     <!-- Artist Autocomplete -->
     <label for="artistNameInput" class="form-label">Search Artist by Name</label>
-    <input type="text" id="artistNameInput" class="form-control" placeholder="e.g. Taylor Swift" oninput="searchArtistName()">
+    <input type="text" id="artistCsvId" class="form-control" placeholder="e.g. Taylor Swift" oninput="searchArtistName()">
     <ul id="artistSuggestions" class="list-group mt-1" style="position: absolute; z-index: 999; max-height: 200px; overflow-y: auto;"></ul>
 
     <!--
@@ -200,44 +200,7 @@
     }
   }
 
- async function searchArtistName() {
-    const input       = document.getElementById('artistNameInput');
-    const suggestions = document.getElementById('artistSuggestions');
-    const query       = input.value;
-    if (query.length < 2) {
-      suggestions.innerHTML = '';
-      return;
-    }
 
-    const res     = await fetch(`/search_artist?q=${encodeURIComponent(query)}`);
-    const artists = await res.json();
-    suggestions.innerHTML = '';
-
-    if (!artists.length) {
-      const li = document.createElement('li');
-      li.className = 'list-group-item';
-      li.textContent = 'No results';
-      suggestions.appendChild(li);
-      return;
-    }
-
-    artists.forEach(artist => {
-      const li = document.createElement('li');
-      li.className = 'list-group-item list-group-item-action';
-      li.textContent = `${artist.name} (ID: ${artist.id})`;
-      li.onclick = () => {
-        // 1) Populate the hidden artistId (for combo searches, if you need it)
-        document.getElementById('artistId').value     = artist.id;
-        // 2) Populate the artistCsvId so the download button is ready
-        document.getElementById('artistCsvId').value  = artist.id;
-        // 3) Show the chosen name in the autocomplete box
-        input.value = artist.name;
-        // 4) Clear suggestions
-        suggestions.innerHTML = '';
-      };
-      suggestions.appendChild(li);
-    });
-  }
 
   async function downloadMasterDeepCSV() {
     const id = document.getElementById('masterDeepId').value;
@@ -301,6 +264,45 @@
     return Array.from(checkboxes)
       .filter(cb => cb.checked)
       .map(cb => cb.value);
+  }
+
+   async function searchArtistName() {
+    const input       = document.getElementById('artistNameInput');
+    const suggestions = document.getElementById('artistSuggestions');
+    const query       = input.value;
+    if (query.length < 2) {
+      suggestions.innerHTML = '';
+      return;
+    }
+
+    const res     = await fetch(`/search_artist?q=${encodeURIComponent(query)}`);
+    const artists = await res.json();
+    suggestions.innerHTML = '';
+
+    if (!artists.length) {
+      const li = document.createElement('li');
+      li.className = 'list-group-item';
+      li.textContent = 'No results';
+      suggestions.appendChild(li);
+      return;
+    }
+
+    artists.forEach(artist => {
+      const li = document.createElement('li');
+      li.className = 'list-group-item list-group-item-action';
+      li.textContent = `${artist.name} (ID: ${artist.id})`;
+      li.onclick = () => {
+        // 1) Populate the hidden artistId (for combo searches, if you need it)
+        document.getElementById('artistId').value     = artist.id;
+        // 2) Populate the artistCsvId so the download button is ready
+        document.getElementById('artistCsvId').value  = artist.id;
+        // 3) Show the chosen name in the autocomplete box
+        input.value = artist.name;
+        // 4) Clear suggestions
+        suggestions.innerHTML = '';
+      };
+      suggestions.appendChild(li);
+    });
   }
 </script>
 
