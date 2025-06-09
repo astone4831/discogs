@@ -9,6 +9,7 @@ dc = dc.discogs()  # instantiate your class
 @app.route('/')
 def home():
     return render_template('index.html')
+'''
 @app.route('/release')
 def release():
     release_id = request.args.get('id')
@@ -33,7 +34,7 @@ def label_releases():
         return jsonify({'error': 'No label ID provided'}), 400
     data = dc.get_all_label_release(label_id)
     return jsonify(data)
-
+'''
 @app.route('/env_check')
 def env_check():
     return jsonify({
