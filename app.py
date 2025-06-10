@@ -42,20 +42,6 @@ def env_check():
         "secret": os.getenv('DISCOGS_SECRET')
     })
 
-@app.route('/download_master_csv')
-def download_master_csv():
-    master_id  = request.args.get('id')
-    cols_param = request.args.get('cols')
-    selected_cols = cols_param.split(',') if cols_param else None
-
-    if not master_id:
-        return jsonify({'error': 'No master ID provided'}), 400
-    try:
-        file_path = dc.export_master_versions_csv(master_id, selected_cols)
-    except Exception as e:
-        return jsonify({ 'error': str(e) }), 400  # return JSON, not let Flask send an HTML 500 page
-    return send_file(file_path, as_attachment=True)
-    
 @app.route('/download_csv')
 def download_csv():
     release_id = request.args.get('id')
@@ -91,15 +77,28 @@ def download_label_csv():
     label_id = request.args.get('id')
     cols_param = request.args.get('cols')
     selected_cols = cols_param.split(',') if cols_param else None
-    if not artist_id:
+    if not label_id:
         return jsonify({'error': 'No label ID provided'}), 400
-    selected_cols = cols_param.split(',') if cols_param else []
+
     try:
         file_path = dc.export_label_release_csv(label_id, selected_cols=selected_cols)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 400
     return send_file(file_path, as_attachment=True)
 
+@app.route('/download_master_csv')
+def download_master_csv():
+    master_id  = request.args.get('id')
+    cols_param = request.args.get('cols')
+    selected_cols = cols_param.split(',') if cols_param else None
+
+    if not master_id:
+        return jsonify({'error': 'No master ID provided'}), 400
+    try:
+        file_path = dc.export_master_versions_csv(master_id, selected_cols)
+    except Exception as e:
+        return jsonify({ 'error': str(e) }), 400  # return JSON, not let Flask send an HTML 500 page
+    return send_file(file_path, as_attachment=True)
 
 @app.route('/search_artist')
 def search_artist():
