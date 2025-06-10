@@ -126,7 +126,7 @@ class discogs:
                 'format':        data.get('formats', [{}])[0].get('name'),
                 'catno':         data.get('labels', [{}])[0].get('catno'),
                 'release_url':   data.get('resource_url') or data.get('uri') or f"https://www.discogs.com/release/{data.get('id')}",
-                'notes':         data.get('notes')
+                'notes':         data.get('notes'),
                 'exclusive':     exclusive
             })
 
