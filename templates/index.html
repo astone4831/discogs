@@ -22,7 +22,28 @@
     <input type="text" id="artistNameInput" class="form-control" placeholder="e.g. Taylor Swift" oninput="searchArtistName()">
     <ul id="artistSuggestions" class="list-group mt-1" style="position: absolute; z-index: 999; max-height: 200px; overflow-y: auto;"></ul>
 
-    <!-- CSV Output for Release -->
+
+    <!-- Download Artist Discography -->
+    <div class="mb-4">
+      <h4>Download Full Artist Discography</h4>
+      <div class="input-group mb-2">
+        <input type="text" id="artistCsvId" class="form-control" placeholder="Enter artist ID">
+        <button onclick="downloadArtistCSV()" class="btn btn-success">Download Artist Discography</button>
+      </div>
+      <!-- Artist Discography Checkboxes -->
+      <div class="d-flex flex-wrap gap-3" id="artistCols">
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="id" checked><label class="form-check-label">Release ID</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="artist" checked><label class="form-check-label">Artist</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="title" checked><label class="form-check-label">Release Title</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="resource_url" checked><label class="form-check-label">URL</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="main_release" checked><label class="form-check-label">Main Release</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="thumb" checked><label class="form-check-label">Thumbnail</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="type" checked><label class="form-check-label">Type</label></div> 
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="year" checked><label class="form-check-label">Release Year</label></div>
+      </div>
+    </div>
+
+        <!-- CSV Output for Release -->
     <div class="mb-4">
       <h4>CSV Output for Release</h4>
       <div class="input-group mb-2">
@@ -44,26 +65,6 @@
           <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="format" checked><label class="form-check-label">Format</label></div>
           <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="notes" checked><label class="form-check-label">Notes</label></div>
           <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="exclusive" checked><label class="form-check-label">Exclusive</label></div>
-      </div>
-    </div>
-
-    <!-- Download Artist Discography -->
-    <div class="mb-4">
-      <h4>Download Full Artist Discography</h4>
-      <div class="input-group mb-2">
-        <input type="text" id="artistCsvId" class="form-control" placeholder="Enter artist ID">
-        <button onclick="downloadArtistCSV()" class="btn btn-success">Download Artist Discography</button>
-      </div>
-      <!-- Artist Discography Checkboxes -->
-      <div class="d-flex flex-wrap gap-3" id="artistCols">
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="id" checked><label class="form-check-label">Release ID</label></div>
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="artist" checked><label class="form-check-label">Artist</label></div>
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="title" checked><label class="form-check-label">Release Title</label></div>
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="resource_url" checked><label class="form-check-label">URL</label></div>
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="main_release" checked><label class="form-check-label">Main Release</label></div>
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="thumb" checked><label class="form-check-label">Thumbnail</label></div>
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="type" checked><label class="form-check-label">Type</label></div> 
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="year" checked><label class="form-check-label">Release Year</label></div>
       </div>
     </div>
 
