@@ -1,3 +1,9 @@
+'''
+Add column selection and the same column choices for the master release and the eventual maserter exploded drop down.
+This is an update to app.py, class.py, and index.html to pass the new columns.
+'''
+
+
 import os
 import time
 import requests
