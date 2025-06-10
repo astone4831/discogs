@@ -52,7 +52,7 @@ class discogs:
             self.t = min(self.t + 5, 60)
 
     def replace_url(self, x):
-        x = x.str.replace('http://api.discogs.com/', 'https://www.discogs.com/')
+        x = x.replace('http://api.discogs.com/', 'https://www.discogs.com/')
         return(x)
         
     def get_release(self, release_id):
