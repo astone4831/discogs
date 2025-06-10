@@ -50,14 +50,10 @@ def download_master_csv():
 
     if not master_id:
         return jsonify({'error': 'No master ID provided'}), 400
-
     try:
-        # pass selected_cols along
         file_path = dc.export_master_versions_csv(master_id, selected_cols)
     except Exception as e:
-        print("ERROR:", e)
-        return jsonify({'error': str(e)}), 500
-
+        return jsonify({ 'error': str(e) }), 400  # return JSON, not let Flask send an HTML 500 page
     return send_file(file_path, as_attachment=True)
     
 @app.route('/download_csv')
