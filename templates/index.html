@@ -253,7 +253,7 @@ async function downloadlabelCSV() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `artist_${id}.csv`;
+    a.download = `label_${id}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
