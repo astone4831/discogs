@@ -128,29 +128,31 @@ class discogs:
         df.to_csv(path, index=False)
         return path
 
-    def export_master_versions_csv(self, master_id, selected_cols=None):
-        all_versions = []
-        page = 1
-        per_page = 100
-        while True:
-            url = f"{self.url_}masters/{master_id}/versions"
-            r = requests.get(url, headers=self.headers, params={'per_page': per_page, 'page': page})
-            self.rate_check(r.headers)
-            r.raise_for_status()
-            data = r.json()
-            all_versions.extend(data.get('versions', []))
-            if page >= data['pagination']['pages']:
-                break
-            page += 1
+def export_master_versions_csv(self, master_id, selected_cols=None):
+    all_versions = []
+    page, per_page = 1, 100
+    while True:
+        r = requests.get(
+            f"{self.url_}masters/{master_id}/versions",
+            headers=self.headers,
+            params={'per_page': per_page, 'page': page}
+        )
+        self.rate_check(r.headers)
+        r.raise_for_status()
+        data = r.json()
+        all_versions.extend(data.get('versions', []))
+        if page >= data['pagination']['pages']:
+            break
+        page += 1
+    df = pd.DataFrame(all_versions)
+    df['url'] = df['url'].str.replace('http://api.discogs.com/', 'https://www.discogs.com/')
+    if selected_cols:
+        df = df[[c for c in selected_cols if c in df.columns]]
 
-        df = pd.DataFrame(all_versions)
-        df['url'] = df['url'].str.replace('http://api.discogs.com/', 'https://www.discogs.com/')
-        if selected_cols:
-            df = df[[col for col in selected_cols if col in df.columns]]
-        os.makedirs("output", exist_ok=True)
-        path = f"output/master_{master_id}_versions.csv"
-        df.to_csv(path, index=False)
-        return path
+    os.makedirs("output", exist_ok=True)
+    path = f"output/master_{master_id}_versions.csv"
+    df.to_csv(path, index=False)
+    return path
 
     def export_master_release_details_csv(self, master_id):
         all_ids = []
