@@ -120,6 +120,7 @@ class discogs:
     def export_artist_releases_csv(self, artist_id, selected_cols=None):
         releases = self.artist_releases(artist_id)
         df = pd.DataFrame(releases)
+        df['url'] = df['url'].str.replace('http://api.discogs.com/', 'https://www.discogs.com/')
         if selected_cols:
             df = df[[col for col in selected_cols if col in df.columns]]
         os.makedirs("output", exist_ok=True)
