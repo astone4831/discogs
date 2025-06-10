@@ -51,8 +51,8 @@ class discogs:
             time.sleep(self.t)
             self.t = min(self.t + 5, 60)
 
-    def replace_url(self, x):
-        x = x.replace('http://api.discogs.com/', 'https://www.discogs.com/')
+    def replace_master_versions_url(self, x):
+        x = x.replace('api.discogs.com/releases', 'www.discogs.com/release')
         return(x)
         
     def get_release(self, release_id):
@@ -149,7 +149,9 @@ class discogs:
                 break
             page += 1
         df = pd.DataFrame(all_versions)
-        df['resource_url'] = df['resource_url'].str.replace('http://api.discogs.com/', 'https://www.discogs.com/')
+
+        df['resource_url'] = df['resource_url'].apply(self.replace_master_versions_url)
+
         if selected_cols:
             df = df[[c for c in selected_cols if c in df.columns]]
     
