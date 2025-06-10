@@ -59,7 +59,7 @@
         <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="artist" checked><label class="form-check-label">Artist</label></div>
         <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="title" checked><label class="form-check-label">Release Title</label></div>
         <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="resource_url" checked><label class="form-check-label">URL</label></div>
-        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="main_release  " checked><label class="form-check-label">Main Release</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="main_release" checked><label class="form-check-label">Main Release</label></div>
         <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="thumb" checked><label class="form-check-label">Thumbnail</label></div>
         <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="type" checked><label class="form-check-label">Type</label></div> 
         <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="year" checked><label class="form-check-label">Release Year</label></div>
@@ -139,6 +139,13 @@
         };
         suggestions.appendChild(li);
       });
+    }
+
+    function getSelectedCols() {
+      const checkboxes = document.querySelectorAll('input.form-check-input');
+      return Array.from(checkboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
     }
 
     function downloadCSV() {
@@ -303,12 +310,7 @@ showStatus("Generating master CSV...", "info", true);
       document.getElementById("status").style.display = "none";
     }
 
-    function getSelectedCols() {
-      const checkboxes = document.querySelectorAll('input.form-check-input');
-      return Array.from(checkboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value);
-    }
+
   </script>
 </body>
 </html>
