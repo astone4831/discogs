@@ -88,6 +88,26 @@
       </div>
     </div>
 
+    	    <div class="mb-4">
+      <h4>Download All Releases from a Label</h4>
+      <div class="input-group">
+        <input type="text" id="labelId" class="form-control" placeholder="Enter Label ID">
+        <button onclick="downloadlabelCSV()" class="btn btn-success">Download Label CSV</button>
+      </div>
+        <div class="d-flex flex-wrap gap-3" id="masterCols">
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="id" checked><label class="form-check-label">Release ID</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="format" checked><label class="form-check-label">Format</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="title" checked><label class="form-check-label">Release Title</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="resource_url" checked><label class="form-check-label">URL</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="country" checked><label class="form-check-label">Country</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="thumb" checked><label class="form-check-label">Thumbnail</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="label" checked><label class="form-check-label">Label</label></div> 
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="year" checked><label class="form-check-label">Release Year</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="major_formats" checked><label class="form-check-label">Major Format</label></div> 
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="catno" checked><label class="form-check-label">Cat No</label></div>
+      </div>
+    </div>
+
     <!-- Deep Dive -->
     <div class="mb-4">
       <h4>Master Deep Dive: All Version Details</h4>
@@ -183,6 +203,49 @@ async function downloadArtistCSV() {
   try {
     // Add columns to the query string
     const res = await fetch(`/download_artist_csv?id=${id}&cols=${selectedCols.join(',')}`);
+    if (!res.ok) {
+      const error = await res.json();
+      showStatus("Error: " + error.error, "danger");
+      return;
+    }
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `artist_${id}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    showStatus("Download started!", "success");
+  } catch (err) {
+    showStatus("Unexpected error: " + err.message, "danger");
+  }
+}
+
+function getSelectedLabelCols() {
+
+  const checkboxes = document.querySelectorAll('#labelCols input.form-check-input');
+  return Array.from(checkboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+async function downloadlabelCSV() {
+  const id = document.getElementById('labelCsvId').value;
+  const selectedCols = getSelectedLabelCols();
+  if (!id) {
+    showStatus("Please enter an Label ID", "warning");
+    return;
+  }
+  if (selectedCols.length === 0) {
+    alert("Please select at least one column.");
+    return;
+  }
+
+  showStatus("Preparing your CSV...", "info", true);
+  try {
+    // Add columns to the query string
+    const res = await fetch(`/download_label_csv?id=${id}&cols=${selectedCols.join(',')}`);
     if (!res.ok) {
       const error = await res.json();
       showStatus("Error: " + error.error, "danger");
