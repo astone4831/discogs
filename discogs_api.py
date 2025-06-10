@@ -51,6 +51,10 @@ class discogs:
             time.sleep(self.t)
             self.t = min(self.t + 5, 60)
 
+    def replace_url(self, x):
+        x = x.str.replace('http://api.discogs.com/', 'https://www.discogs.com/')
+        return(x)
+        
     def get_release(self, release_id):
         url = f"{self.url_}releases/{release_id}"
         r = requests.get(url, headers=self.headers)
@@ -120,7 +124,7 @@ class discogs:
     def export_artist_releases_csv(self, artist_id, selected_cols=None):
         releases = self.artist_releases(artist_id)
         df = pd.DataFrame(releases)
-        df['resource_url'] = df['resource_url'].str.replace('http://api.discogs.com/', 'https://www.discogs.com/')
+        df['resource_url'] = df['resource_url'].apply(self.replace_url)
         if selected_cols:
             df = df[[col for col in selected_cols if col in df.columns]]
         os.makedirs("output", exist_ok=True)
