@@ -245,8 +245,14 @@ async function downloadlabelCSV() {
     // Add columns to the query string
     const res = await fetch(`/download_label_csv?id=${id}&cols=${selectedCols.join(',')}`);
     if (!res.ok) {
-      const error = await res.json();
-      showStatus("Error: " + error.error, "danger");
+      let errMsg;
+      try {
+        const errJson = await res.json();
+        errMsg = errJson.error || JSON.stringify(errJson);
+      } catch {
+        errMsg = await res.text();
+      }
+      showStatus("Error: " + errMsg, "danger");
       return;
     }
     const blob = await res.blob();
