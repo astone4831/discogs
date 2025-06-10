@@ -89,6 +89,16 @@
       </div>
     </div>
 
+        <!-- Deep Dive -->
+    <div class="mb-4">
+      <h4>Download All Versions of a Master Release: Exploded Details</h4>
+      <div class="input-group">
+        <input type="text" id="masterDeepId" class="form-control" placeholder="Enter master ID (e.g. 12156)">
+        <button onclick="downloadMasterDeepCSV()" class="btn btn-warning">Download Full Master Details</button>
+      </div>
+    </div>
+
+
     <div class="mb-4">
       <h4>Download All Releases from a Label</h4>
       <div class="input-group">
@@ -107,14 +117,6 @@
       </div>
     </div>
 
-    <!-- Deep Dive -->
-    <div class="mb-4">
-      <h4>Master Deep Dive: All Version Details</h4>
-      <div class="input-group">
-        <input type="text" id="masterDeepId" class="form-control" placeholder="Enter master ID (e.g. 12156)">
-        <button onclick="downloadMasterDeepCSV()" class="btn btn-warning">Download Full Master Details</button>
-      </div>
-    </div>
 
     <!-- Status and Output -->
     <div id="status" class="alert alert-secondary d-flex align-items-center" role="alert" style="display: none;">
