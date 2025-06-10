@@ -109,6 +109,11 @@ class discogs:
 
     def parsing_release_lists(self, data, return_df=False, selected_cols=None):
         rows = []
+        exclusive = None
+        for i in data['companies']:
+            if i['entity_type_name'] == 'Exclusive Retailer':
+                exclusive = i['name'])    
+        
         for d in data.get('tracklist', []):
             rows.append({
                 'release_id':    data.get('id'),
@@ -122,6 +127,7 @@ class discogs:
                 'catno':         data.get('labels', [{}])[0].get('catno'),
                 'release_url':   data.get('resource_url') or data.get('uri') or f"https://www.discogs.com/release/{data.get('id')}",
                 'notes':         data.get('notes')
+                'exclusive': exclusive
             })
 
         df = pd.DataFrame(rows)
