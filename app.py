@@ -90,7 +90,7 @@ def download_artist_csv():
 def download_label_csv():
     label_id = request.args.get('id')
     cols_param = request.args.get('cols')
-	selected_cols = cols_param.split(',') if cols_param else None
+    selected_cols = cols_param.split(',') if cols_param else None
     if not artist_id:
         return jsonify({'error': 'No label ID provided'}), 400
     selected_cols = cols_param.split(',') if cols_param else []
