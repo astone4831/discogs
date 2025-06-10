@@ -91,7 +91,7 @@ class discogs:
             page += 1
         return releases
 
-    def export_label_release_csv(self, label_id):
+    def export_label_release_csv(self, label_id, selected_cols = None):
         releases = []
         page = 1
         per_page = 100
@@ -108,6 +108,8 @@ class discogs:
         df = pd.DataFrame(releases)
         df = df.drop_duplicates(keep = 'first')
         df['resource_url'] = df['resource_url'].apply(self.replace_master_versions_url)
+        if selected_cols:
+            df = df[[col for col in selected_cols if col in df.columns]]
         os.makedirs("output", exist_ok=True)
         path = f"output/label_{label_id}.csv"
         df.to_csv(path, index=False)
