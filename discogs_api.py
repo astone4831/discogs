@@ -116,12 +116,12 @@ class discogs:
         
         for d in data.get('tracklist', []):
             rows.append({
-                'release_id':    data.get('id'),
+                'artist':        data.get('artists_sort'),
+                'release_title': data.get('title'),
+                'position':      d.get('position'),
                 'track_title':   d.get('title'),
                 'duration':      self.format_to_mm_ss(d.get('duration')),
-                'position':      d.get('position'),
-                'release_title': data.get('title'),
-                'artist':        data.get('artists_sort'),
+                'release_id':    data.get('id'),
                 'label':         data.get('labels', [{}])[0].get('name'),
                 'format':        data.get('formats', [{}])[0].get('name'),
                 'catno':         data.get('labels', [{}])[0].get('catno'),
