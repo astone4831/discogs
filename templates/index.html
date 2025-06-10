@@ -73,6 +73,18 @@
         <input type="text" id="masterId" class="form-control" placeholder="Enter master release ID">
         <button onclick="downloadMasterCSV()" class="btn btn-success">Download Master CSV</button>
       </div>
+        <div class="d-flex flex-wrap gap-3" id="artistCols">
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="id" checked><label class="form-check-label">Release ID</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="format" checked><label class="form-check-label">Format</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="title" checked><label class="form-check-label">Release Title</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="resource_url" checked><label class="form-check-label">URL</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="country" checked><label class="form-check-label">Country</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="thumb" checked><label class="form-check-label">Thumbnail</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="label" checked><label class="form-check-label">Label</label></div> 
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="year" checked><label class="form-check-label">Release Year</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="major_formats" checked><label class="form-check-label">Major Format</label></div> 
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="catno" checked><label class="form-check-label">Cat No</label></div>
+      </div>
     </div>
 
     <!-- Deep Dive -->
@@ -93,8 +105,7 @@
     <h5 class="mt-4">Results</h5>
     <pre id="output" class="bg-white border rounded p-3" style="max-height: 400px; overflow: auto;"></pre>
   </div>
-
-  <!-- JavaScript Functions (at the END of body for safety!) -->
+  
   <script>
     async function searchArtistName() {
       const input       = document.getElementById('artistNameInput');
@@ -184,14 +195,50 @@ async function downloadArtistCSV() {
   }
 }
 
-    function downloadMasterCSV() {
-      const id = document.getElementById('masterId').value;
-      if (!id) {
-        alert("Please enter a master release ID");
+  // Collect selected master columns
+  function getSelectedMasterCols() {
+    return Array.from(
+      document.querySelectorAll('#masterCols input.form-check-input')
+    )
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+  }
+
+  // Download Master CSV with selected columns
+  async function downloadMasterCSV() {
+    const id = document.getElementById('masterId').value;
+    if (!id) {
+      alert("Please enter a master release ID");
+      return;
+    }
+    const cols = getSelectedMasterCols();
+    if (cols.length === 0) {
+      alert("Please select at least one column");
+      return;
+    }
+
+    showStatus("Generating master CSV...", "info", true);
+    try {
+      const res = await fetch(`/download_master_csv?id=${id}&cols=${cols.join(',')}`);
+      if (!res.ok) {
+        const error = await res.json();
+        showStatus("Error: " + error.error, "danger");
         return;
       }
-      window.location.href = `/download_master_csv?id=${id}`;
+      const blob = await res.blob();
+      const url  = window.URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `master_${id}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      showStatus("Download started!", "success");
+    } catch (err) {
+      showStatus("Unexpected error: " + err.message, "danger");
     }
+  }
 
     async function downloadMasterDeepCSV() {
       const id = document.getElementById('masterDeepId').value;
