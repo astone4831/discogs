@@ -87,7 +87,7 @@ def download_artist_csv():
     return send_file(file_path, as_attachment=True)
 
 @app.route('/download_label_csv')
-def download_artist_csv():
+def download_label_csv():
     label_id = request.args.get('id')
     cols_param = request.args.get('cols')
     if not artist_id:
