@@ -94,7 +94,7 @@ def download_artist_csv():
         return jsonify({'error': 'No label ID provided'}), 400
     selected_cols = cols_param.split(',') if cols_param else []
     try:
-        file_path = dc.export_label_release_csv(artist_id, selected_cols=selected_cols)
+        file_path = dc.export_label_release_csv(label_id, selected_cols=selected_cols)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     return send_file(file_path, as_attachment=True)
