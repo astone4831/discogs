@@ -49,9 +49,23 @@
     <!-- Download Artist Discography -->
     <div class="mb-4">
       <h4>Download Full Artist Discography</h4>
-      <div class="input-group">
+      <div class="input-group mb-2">
         <input type="text" id="artistCsvId" class="form-control" placeholder="Enter artist ID">
         <button onclick="downloadArtistCSV()" class="btn btn-success">Download Artist Discography</button>
+      </div>
+      <!-- Artist Discography Checkboxes -->
+      <div class="d-flex flex-wrap gap-3" id="artistCols">
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="release_id" checked><label class="form-check-label">Release ID</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="artist" checked><label class="form-check-label">Artist</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="release_title" checked><label class="form-check-label">Release Title</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="url" checked><label class="form-check-label">URL</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="label" checked><label class="form-check-label">Label</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="catno" checked><label class="form-check-label">Cat No</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="format" checked><label class="form-check-label">Format</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="track_title" checked><label class="form-check-label">Track Title</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="duration" checked><label class="form-check-label">Duration</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="position" checked><label class="form-check-label">Track Position</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="notes" checked><label class="form-check-label">Notes</label></div>
       </div>
     </div>
 
@@ -129,35 +143,49 @@
       window.location.href = `/download_csv?id=${id}&cols=${selectedCols.join(',')}`;
     }
 
-    async function downloadArtistCSV() {
-      const id = document.getElementById('artistCsvId').value;
-      if (!id) {
-        showStatus("Please enter an artist ID", "warning");
-        return;
-      }
+    function getSelectedArtistCols() {
+  // Looks for checked boxes inside #artistCols only
+  const checkboxes = document.querySelectorAll('#artistCols input.form-check-input');
+  return Array.from(checkboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+}
 
-      showStatus("Preparing your CSV...", "info", true);
-      try {
-        const res = await fetch(`/download_artist_csv?id=${id}`);
-        if (!res.ok) {
-          const error = await res.json();
-          showStatus("Error: " + error.error, "danger");
-          return;
-        }
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `artist_${id}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-        showStatus("Download started!", "success");
-      } catch (err) {
-        showStatus("Unexpected error: " + err.message, "danger");
-      }
+async function downloadArtistCSV() {
+  const id = document.getElementById('artistCsvId').value;
+  const selectedCols = getSelectedArtistCols();
+  if (!id) {
+    showStatus("Please enter an artist ID", "warning");
+    return;
+  }
+  if (selectedCols.length === 0) {
+    alert("Please select at least one column.");
+    return;
+  }
+
+  showStatus("Preparing your CSV...", "info", true);
+  try {
+    // Add columns to the query string
+    const res = await fetch(`/download_artist_csv?id=${id}&cols=${selectedCols.join(',')}`);
+    if (!res.ok) {
+      const error = await res.json();
+      showStatus("Error: " + error.error, "danger");
+      return;
     }
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `artist_${id}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    showStatus("Download started!", "success");
+  } catch (err) {
+    showStatus("Unexpected error: " + err.message, "danger");
+  }
+}
 
     function downloadMasterCSV() {
       const id = document.getElementById('masterId').value;
