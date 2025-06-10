@@ -91,7 +91,7 @@ class discogs:
             page += 1
         return releases
 
-    def get_all_label_release(self, label_id):
+    def export_label_release_csv(self, label_id):
         releases = []
         page = 1
         per_page = 100
@@ -105,7 +105,14 @@ class discogs:
             if page >= data['pagination']['pages']:
                 break
             page += 1
-        return releases
+        df = pd.DataFrame(releases)
+        df = df.drop_duplicates(keep = 'first')
+        df['resource_url'] = df['resource_url'].apply(self.replace_master_versions_url)
+        os.makedirs("output", exist_ok=True)
+        path = f"output/label_{label_id}.csv"
+        df.to_csv(path, index=False)
+        return path
+           
 
     def parsing_release_lists(self, data, return_df=False, selected_cols=None):
         rows = []
