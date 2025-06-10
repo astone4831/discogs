@@ -217,14 +217,20 @@ async function downloadArtistCSV() {
       return;
     }
 
-    showStatus("Generating master CSV...", "info", true);
-    try {
-      const res = await fetch(`/download_master_csv?id=${id}&cols=${cols.join(',')}`);
-      if (!res.ok) {
-        const error = await res.json();
-        showStatus("Error: " + error.error, "danger");
-        return;
+showStatus("Generating master CSV...", "info", true);
+  try {
+    const res = await fetch(`/download_master_csv?id=${id}&cols=${cols.join(',')}`);
+    if (!res.ok) {
+      let errMsg;
+      try {
+        const errJson = await res.json();
+        errMsg = errJson.error || JSON.stringify(errJson);
+      } catch {
+        errMsg = await res.text();
       }
+      showStatus("Error: " + errMsg, "danger");
+      return;
+    }
       const blob = await res.blob();
       const url  = window.URL.createObjectURL(blob);
       const a    = document.createElement('a');
