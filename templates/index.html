@@ -227,9 +227,9 @@ function getSelectedLabelCols() {
   return Array.from(checkboxes)
     .filter(cb => cb.checked)
     .map(cb => cb.value);
-
+}
 async function downloadlabelCSV() {
-  const id = document.getElementById('labelCsvId').value;
+  const id = document.getElementById('labelId').value;
   const selectedCols = getSelectedLabelCols();
   if (!id) {
     showStatus("Please enter an Label ID", "warning");
