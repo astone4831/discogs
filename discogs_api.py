@@ -3,6 +3,7 @@ import time
 import requests
 import pandas as pd
 from datetime import date, datetime
+import re 
 
 class discogs:
     @staticmethod
@@ -52,12 +53,20 @@ class discogs:
             self.t = min(self.t + 5, 60)
 
     def replace_master_versions_url(self, x):
-        x = x.replace('api.discogs.com/releases', 'www.discogs.com/release')
-        return(x)
+        if x.search('releases'):
+            x = x.replace('api.discogs.com/releases', 'www.discogs.com/release')
+            return(x)
+        else:
+            x = x.replace('api.discogs.com/masters', 'www.discogs.com/master')
+            return(x)
     
     def replace_artist_versions_url(self, x):
-        x = x.replace('api.discogs.com/releases', 'www.discogs.com/release')
-        return(x)
+        if x.search('releases'):
+            x = x.replace('api.discogs.com/releases', 'www.discogs.com/release')
+            return(x)
+        else:
+            x = x.replace('api.discogs.com/masters', 'www.discogs.com/master')
+            return(x)
         
     def get_release(self, release_id):
         url = f"{self.url_}releases/{release_id}"
