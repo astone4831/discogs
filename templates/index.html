@@ -31,7 +31,7 @@
       </div>
 
       <h5 class="mt-3">Choose Columns</h5>
-      <div class="d-flex flex-wrap gap-3">
+      <div class="d-flex flex-wrap gap-3" id="releaseCols">
           <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="release_id" checked><label class="form-check-label">Release ID</label></div>
           <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="artist" checked><label class="form-check-label">Artist</label></div>
           <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="release_title" checked><label class="form-check-label">Release Title</label></div>
@@ -161,7 +161,7 @@
     }
 
     function getSelectedCols() {
-      const checkboxes = document.querySelectorAll('input.form-check-input');
+      const checkboxes = document.querySelectorAll('#releaseCols input.form-check-input');
       return Array.from(checkboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value);
