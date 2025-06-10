@@ -144,6 +144,7 @@ class discogs:
             page += 1
 
         df = pd.DataFrame(all_versions)
+        df['url'] = df['url'].str.replace('http://api.discogs.com/', 'https://www.discogs.com/')
         if selected_cols:
             df = df[[col for col in selected_cols if col in df.columns]]
         os.makedirs("output", exist_ok=True)
