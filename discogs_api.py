@@ -53,7 +53,7 @@ class discogs:
             self.t = min(self.t + 5, 60)
 
     def replace_master_versions_url(self, x):
-        if x.search('releases'):
+        if re.search('releases',x):
             x = x.replace('api.discogs.com/releases', 'www.discogs.com/release')
             return(x)
         else:
@@ -61,7 +61,7 @@ class discogs:
             return(x)
     
     def replace_artist_versions_url(self, x):
-        if x.search('releases'):
+        if re.search('releases',x):
             x = x.replace('api.discogs.com/releases', 'www.discogs.com/release')
             return(x)
         else:
