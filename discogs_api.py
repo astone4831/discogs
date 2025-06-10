@@ -112,7 +112,7 @@ class discogs:
         exclusive = None
         for i in data['companies']:
             if i['entity_type_name'] == 'Exclusive Retailer':
-                exclusive = i['name'])    
+                exclusive = i['name']  
         
         for d in data.get('tracklist', []):
             rows.append({
@@ -127,7 +127,7 @@ class discogs:
                 'catno':         data.get('labels', [{}])[0].get('catno'),
                 'release_url':   data.get('resource_url') or data.get('uri') or f"https://www.discogs.com/release/{data.get('id')}",
                 'notes':         data.get('notes')
-                'exclusive': exclusive
+                'exclusive':     exclusive
             })
 
         df = pd.DataFrame(rows)
