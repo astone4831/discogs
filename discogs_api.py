@@ -57,7 +57,7 @@ class discogs:
         if used <= 5:
             time.sleep(self.t)
             self.t = min(self.t + 5, 60)
-
+##the two functions below do the same thing..............
     def replace_master_versions_url(self, x):
         if re.search('releases',x):
             x = x.replace('api.discogs.com/releases', 'www.discogs.com/release')
