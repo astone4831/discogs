@@ -215,7 +215,7 @@ async function downloadArtistCSV() {
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
-    showStatus("Download started!", "success");
+    showStatus("Download Complete!", "success");
   } catch (err) {
     showStatus("Unexpected error: " + err.message, "danger");
   }
@@ -264,7 +264,7 @@ async function downloadlabelCSV() {
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
-    showStatus("Download started!", "success");
+    showStatus("Download Complete!", "success");
   } catch (err) {
     showStatus("Unexpected error: " + err.message, "danger");
   }
@@ -315,7 +315,7 @@ showStatus("Generating master CSV...", "info", true);
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-      showStatus("Download started!", "success");
+      showStatus("Download Complete!", "success");
     } catch (err) {
       showStatus("Unexpected error: " + err.message, "danger");
     }
@@ -361,7 +361,7 @@ showStatus("Generating master CSV...", "info", true);
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-      showStatus("Download started!", "success");
+      showStatus("Download Complete!", "success");
     }
 
     function showStatus(message, type = "secondary", showSpinner = false) {
