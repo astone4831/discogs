@@ -65,6 +65,7 @@
           <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="format" checked><label class="form-check-label">Format</label></div>
           <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="notes" checked><label class="form-check-label">Notes</label></div>
           <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="exclusive" checked><label class="form-check-label">Exclusive</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="country" checked><label class="form-check-label">Country</label></div>
       </div>
     </div>
 
@@ -95,6 +96,22 @@
       <div class="input-group">
         <input type="text" id="masterDeepId" class="form-control" placeholder="Enter master ID (e.g. 12156)">
         <button onclick="downloadMasterDeepCSV()" class="btn btn-warning">Download Full Master Details</button>
+      </div>
+
+      <div class="d-flex flex-wrap gap-3" id="masterdeepCols">
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="release_id" checked><label class="form-check-label">Release ID</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="artist" checked><label class="form-check-label">Artist</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="release_title" checked><label class="form-check-label">Release Title</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="position" checked><label class="form-check-label">Track Position</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="track_title" checked><label class="form-check-label">Track Title</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="duration" checked><label class="form-check-label">Duration</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="url" checked><label class="form-check-label">URL</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="label" checked><label class="form-check-label">Label</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="catno" checked><label class="form-check-label">Cat No</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="format" checked><label class="form-check-label">Format</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="notes" checked><label class="form-check-label">Notes</label></div>
+          <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="exclusive" checked><label class="form-check-label">Exclusive</label></div>
+        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="country" checked><label class="form-check-label">Country</label></div>
       </div>
     </div>
 
@@ -324,15 +341,29 @@ showStatus("Generating master CSV...", "info", true);
     }
   }
 
+      // Collect selected master columns
+  function getSelectedMasterdeepCols() {
+    return Array.from(
+      document.querySelectorAll('#masterdeepCols input.form-check-input')
+    )
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+  }
+
     async function downloadMasterDeepCSV() {
-      const id = document.getElementById('masterDeepId').value;
+      const id = document.getElementById("masterDeepId").value;
+      const cols = getSelectedMasterdeepCols();
+      if (cols.length === 0) {
+        alert("Please select at least one column");
+        return;
+      }
       if (!id) {
         showStatus("Enter a master ID", "warning");
         return;
       }
 
       showStatus("Checking master size...", "info", true);
-      const res = await fetch(`/download_master_deep_csv?id=${id}`);
+      const res = await fetch(`/download_master_deep_csv?id=${id}&cols=${cols.join(',')}`);
       if (res.status === 202) {
         const data = await res.json();
         const proceed = confirm(data.warning);
