@@ -229,7 +229,7 @@ async function downloadArtistCSV() {
     gtag('event', 'download_artist_csv', {
       event_category: 'Download',
       event_label: `Artist ID: ${id}`,
-      value: ${id}
+      value: 1
     });
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
@@ -283,7 +283,7 @@ async function downloadlabelCSV() {
     gtag('event', 'download_label_csv', {
       event_category: 'Download',
       event_label: `Label ID: ${id}`,
-      value: ${id}
+      value: 1
     });
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
@@ -339,7 +339,7 @@ showStatus("Generating master CSV...", "info", true);
     gtag('event', 'download_master_csv', {
       event_category: 'Download',
       event_label: `MAster ID: ${id}`,
-      value: ${id}
+      value: 1
     });
       const blob = await res.blob();
       const url  = window.URL.createObjectURL(blob);
