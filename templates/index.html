@@ -239,6 +239,10 @@ async function downloadArtistCSV() {
   } catch (err) {
     showStatus("Unexpected error: " + err.message, "danger");
   }
+  gtag('event', ${id}, {
+        'app_name': 'myAppName',
+        'screen_name': 'Download Artist'
+      });
 }
 
 function getSelectedLabelCols() {
