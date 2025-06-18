@@ -280,6 +280,11 @@ async function downloadlabelCSV() {
       showStatus("Error: " + errMsg, "danger");
       return;
     }
+    gtag('event', 'download_label_csv', {
+      event_category: 'Download',
+      event_label: `Label ID: ${id}`,
+      value: ${id}
+    });
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -331,6 +336,11 @@ showStatus("Generating master CSV...", "info", true);
       showStatus("Error: " + errMsg, "danger");
       return;
     }
+    gtag('event', 'download_master_csv', {
+      event_category: 'Download',
+      event_label: `MAster ID: ${id}`,
+      value: ${id}
+    });
       const blob = await res.blob();
       const url  = window.URL.createObjectURL(blob);
       const a    = document.createElement('a');
