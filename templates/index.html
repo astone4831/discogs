@@ -229,7 +229,7 @@ async function downloadArtistCSV() {
     gtag('event', 'download_artist_csv', {
       event_category: 'Download',
       event_label: `Artist ID: ${id}`,
-      value: 1
+      value: ${id}
     });
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
