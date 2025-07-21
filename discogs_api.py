@@ -143,7 +143,8 @@ class discogs:
                 'release_url':   data.get('resource_url') or data.get('uri') or f"https://www.discogs.com/release/{data.get('id')}",
                 'notes':         data.get('notes'),
                 'exclusive':     exclusive,
-                'country':       data.get('country')
+                'country':       data.get('country'),
+                'barcode':       data.get('identifiers', [{}])[0].get('value')
             })
 
         df = pd.DataFrame(rows)
