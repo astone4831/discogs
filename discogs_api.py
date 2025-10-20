@@ -144,7 +144,8 @@ class discogs:
                 'notes':         data.get('notes'),
                 'exclusive':     exclusive,
                 'country':       data.get('country'),
-                'barcode':       data.get('identifiers', [{}])[0].get('value')
+                'barcode':       data.get('identifiers', [{}])[0].get('value'),
+                'release_year': data.get('released')
             })
 
         df = pd.DataFrame(rows)
