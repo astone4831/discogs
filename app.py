@@ -21,7 +21,7 @@ def release():
     data = dc.get_release(release_id)
     return jsonify(data)
 
-@app.route('/artist_releases')
+@app.route('/artist_releases') 
 def artist_releases():
     artist_id = request.args.get('id')
     if not artist_id:
