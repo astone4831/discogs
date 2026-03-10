@@ -130,6 +130,8 @@ class discogs:
                 exclusive = i['name']  
         
         for d in data.get('tracklist', []):
+
+            
             rows.append({
                 'artist':        data.get('artists_sort'),
                 'release_title': data.get('title'),
@@ -146,7 +148,8 @@ class discogs:
                 'country':       data.get('country'),
                 'barcode':       data.get('identifiers', [{}])[0].get('value'),
                 'release_year': data.get('released'),
-                'credits': " | ".join(ea.get('role', '') for ea in data.get('extraartists', []) if ea.get('role')),
+                'credits_release': " | ".join(ea.get('role','') for ea in data.get('extraartists', []) if ea.get('role')),
+                'credits_track':   " | ".join(ea.get('role','') for ea in d.get('extraartists', []) if ea.get('role')),
             })
 
         df = pd.DataFrame(rows)
