@@ -141,7 +141,7 @@ class discogs:
         "strings_orchestral": {"strings", "violin", "viola", "cello", "harp"},
         "brass_woodwinds": {
             "trumpet", "trombone", "french horn", "tuba", "saxophone", "clarinet",
-            "flute", "oboe", "bassoon", "harmonica",
+            "flute", "oboe", "bassoon", "harmonica", "horns",
         },
     }
 
