@@ -120,7 +120,109 @@ class discogs:
         path = f"output/label_{label_id}.csv"
         df.to_csv(path, index=False)
         return path
-           
+    
+    DISCOGS_INSTRUMENT_ROLE_ALLOWLIST = {
+        "guitars": {
+            "guitar",
+            "acoustic guitar",
+            "electric guitar",
+            "classical guitar",
+            "steel guitar",
+            "lap steel guitar",
+            "pedal steel guitar",
+            "slide guitar",
+            "mandolin",
+            "banjo",
+            "ukulele",
+            "sitar",
+        },
+        "bass": {
+            "bass",
+            "bass guitar",
+            "double bass",
+            "upright bass",
+            "contrabass",
+        },
+        "drums_percussion": {
+            "drums",
+            "drum machine",
+            "percussion",
+            "timpani",
+            "congas",
+            "bongos",
+            "timbales",
+            "tambourine",
+            "triangle",
+            "claves",
+            "cowbell",
+            "shaker",
+            "marimba",
+            "vibraphone",
+            "xylophone",
+            "glockenspiel",
+            "kalimba",
+            "steel drums",
+        },
+        "keys_synth": {
+            "keyboards",
+            "keyboard",
+            "piano",
+            "electric piano",
+            "organ",
+            "harpsichord",
+            "clavinet",
+            "mellotron",
+            "synthesizer",
+            "fender rhodes",
+        },
+        "strings_orchestral": {
+            "strings",
+            "violin",
+            "viola",
+            "cello",
+            "harp",
+        },
+        "brass_woodwinds": {
+            "trumpet",
+            "trombone",
+            "french horn",
+            "tuba",
+            "saxophone",
+            "clarinet",
+            "flute",
+            "oboe",
+            "bassoon",
+            "harmonica",
+        },
+    }
+        
+    _ALLOWED_INSTRUMENT_BASE_ROLES = {
+        r for bucket in DISCOGS_INSTRUMENT_ROLE_ALLOWLIST.values() for r in bucket
+    }
+    
+    def _split_discogs_roles(role_field: str) -> list[str]:
+        if not role_field:
+            return []
+        return [part.strip() for part in role_field.split(",") if part.strip()]
+    
+    def _role_base_for_matching(role: str) -> str:
+        base = re.sub(r"\s*[\[\(].*$", "", role).strip().lower()
+        return base
+    
+    def _instrument_roles_only(extraartists: list[dict]) -> str:
+        if not extraartists:
+            return ""
+    
+        kept: list[str] = []
+        for ea in extraartists:
+            role_field = ea.get("role") or ""
+            for role in _split_discogs_roles(role_field):
+                base = _role_base_for_matching(role)
+                if base in _ALLOWED_INSTRUMENT_BASE_ROLES:
+                    kept.append(role)
+                    
+        kept = list(dict.fromkeys(kept))
+        return " | ".join(kept)
 
     def parsing_release_lists(self, data, return_df=False, selected_cols=None):
         rows = []
@@ -148,8 +250,8 @@ class discogs:
                 'country':       data.get('country'),
                 'barcode':       data.get('identifiers', [{}])[0].get('value'),
                 'release_year': data.get('released'),
-                'credits_release': " | ".join(ea.get('role','') for ea in data.get('extraartists', []) if ea.get('role')),
-                'credits_track':   " | ".join(ea.get('role','') for ea in d.get('extraartists', []) if ea.get('role')),
+                'credits_release': _instrument_roles_only(data.get('extraartists', [])),
+                'credits_track':   _instrument_roles_only(d.get('extraartists', [])),
             })
 
         df = pd.DataFrame(rows)
