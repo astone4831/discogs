@@ -73,6 +73,41 @@
       </div>
     </div>
 
+
+ <!-- Download Multiple Release Tracklist Details -->
+<div class="mb-4">
+  <h4>Download Multiple Release Tracklist Details</h4>
+  <div class="mb-2">
+    <textarea
+      id="csvReleaseIds"
+      class="form-control"
+      rows="4"
+      placeholder="Enter release IDs separated by commas or new lines&#10;Example:&#10;5101485, 1234567, 7654321">
+    </textarea>
+  </div>
+  <button onclick="downloadMultipleReleaseCSV()" class="btn btn-success">Download Multi-Release CSV</button>
+
+  <h5 class="mt-3">Choose Columns</h5>
+  <div class="d-flex flex-wrap gap-3" id="multiReleaseCols">
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="release_id" checked><label class="form-check-label">Release ID</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="artist" checked><label class="form-check-label">Artist</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="release_title" checked><label class="form-check-label">Release Title</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="position" checked><label class="form-check-label">Track Position</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="track_title" checked><label class="form-check-label">Track Title</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="duration" checked><label class="form-check-label">Duration</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="release_url" checked><label class="form-check-label">URL</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="label" checked><label class="form-check-label">Label</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="catno" checked><label class="form-check-label">Cat No</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="format" checked><label class="form-check-label">Format</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="notes" checked><label class="form-check-label">Notes</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="exclusive" checked><label class="form-check-label">Exclusive</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="country" checked><label class="form-check-label">Country</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="barcode" checked><label class="form-check-label">Barcode</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="credits_release" checked><label class="form-check-label">Release Credits</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="credits_track" checked><label class="form-check-label">Track Credits</label></div>
+  </div>
+</div>
+
     <!-- Master Releases -->
     <div class="mb-4">
       <h4>Download All Versions of a Master Release</h4>
@@ -431,7 +466,54 @@ showStatus("Generating master CSV...", "info", true);
       document.getElementById("status").style.display = "none";
     }
 
-
-  </script>
+    function downloadMultipleReleaseCSV() {
+      const rawIds = document.getElementById("csvReleaseIds").value;
+  
+      const releaseIds = rawIds
+        .split(/[\n,]+/)
+        .map(id => id.trim())
+        .filter(id => id !== "");
+  
+      const selectedCols = Array.from(
+        document.querySelectorAll("#multiReleaseCols input[type='checkbox']:checked")
+      ).map(cb => cb.value);
+  
+      if (releaseIds.length === 0) {
+        alert("Please enter at least one release ID.");
+        return;
+      }
+  
+      fetch("/download_multiple_release_csv", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          release_ids: releaseIds,
+          selected_cols: selectedCols
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Download failed");
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "multiple_releases_tracks.csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.error(error);
+        alert("Something went wrong downloading the CSV.");
+      });
+    }
+</script>
 </body>
 </html>
