@@ -214,6 +214,34 @@ class discogs:
 
         return df if return_df else path
 
+    
+    def export_multiple_releases_tracks_csv(self, release_ids, selected_cols=None, output_name="multiple_releases_tracks.csv"):
+        all_dfs = []
+    
+        for rid in release_ids:
+            try:
+                release_data = self.get_release(rid)
+                df = self.parsing_release_lists(
+                    release_data,
+                    return_df=True,
+                    selected_cols=selected_cols
+                )
+                all_dfs.append(df)
+            except Exception as e:
+                print(f"Skipping release {rid}: {e}")
+                continue
+    
+        if not all_dfs:
+            raise Exception("No releases processed")
+    
+        final_df = pd.concat(all_dfs, ignore_index=True)
+    
+        os.makedirs("output", exist_ok=True)
+        path = f"output/{output_name}"
+        final_df.to_csv(path, index=False)
+    
+        return final_df, path
+    
     def export_artist_releases_csv(self, artist_id, selected_cols=None):
         releases = self.artist_releases(artist_id)
         df = pd.DataFrame(releases)
