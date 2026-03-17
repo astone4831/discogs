@@ -156,8 +156,8 @@ def download_multiple_release_csv():
         if not release_ids:
             return jsonify({"error": "No release IDs provided"}), 400
 
-        d = discogs()
-        path = d.export_multiple_releases_tracks_csv(
+        dc = discogs()
+        path = dc.export_multiple_releases_tracks_csv(
             release_ids=release_ids,
             selected_cols=selected_cols
         )
