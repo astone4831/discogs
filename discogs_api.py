@@ -240,7 +240,7 @@ class discogs:
         path = f"output/{output_name}"
         final_df.to_csv(path, index=False)
     
-        return final_df, path
+        return path
     
     def export_artist_releases_csv(self, artist_id, selected_cols=None):
         releases = self.artist_releases(artist_id)
