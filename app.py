@@ -156,17 +156,16 @@ def download_multiple_release_csv():
         if not release_ids:
             return jsonify({"error": "No release IDs provided"}), 400
 
-        dc = discogs()
-        path = dc.export_multiple_releases_tracks_csv(
+        file_path = dc.export_multiple_releases_tracks_csv(
             release_ids=release_ids,
             selected_cols=selected_cols
         )
 
-        return send_file(path, as_attachment=True)
+        return send_file(file_path, as_attachment=True)
 
     except Exception as e:
+        print(f"ERROR in /download_multiple_release_csv: {e}")
         return jsonify({"error": str(e)}), 500
-
-
+        
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port = 10000)
