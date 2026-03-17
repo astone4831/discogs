@@ -146,6 +146,27 @@ def download_master_deep_csv():
         return jsonify({'error': str(e)}), 500
     return send_file(file_path, as_attachment=True)
 
+@app.route("/download_multiple_release_csv", methods=["POST"])
+def download_multiple_release_csv():
+    try:
+        data = request.get_json() or {}
+        release_ids = data.get("release_ids", [])
+        selected_cols = data.get("selected_cols", [])
+
+        if not release_ids:
+            return jsonify({"error": "No release IDs provided"}), 400
+
+        d = discogs()
+        path = d.export_multiple_releases_tracks_csv(
+            release_ids=release_ids,
+            selected_cols=selected_cols
+        )
+
+        return send_file(path, as_attachment=True)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port = 10000)
