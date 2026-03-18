@@ -216,56 +216,54 @@ class discogs:
 
     
     def export_multiple_releases_tracks_csv(self, release_ids, selected_cols=None, output_name="multiple_releases_tracks.csv"):
-    os.makedirs("output", exist_ok=True)
-    path = f"output/{output_name}"
-
-    processed = 0
-    wrote_anything = False
-
-    # optional: remove duplicates while keeping order
-    seen = set()
-    clean_ids = []
-    for rid in release_ids:
-        rid = str(rid).strip()
-        if rid and rid not in seen:
-            seen.add(rid)
-            clean_ids.append(rid)
-
-    for i, rid in enumerate(clean_ids, start=1):
-        try:
-            release_data = self.get_release(rid)
-
-            df = self.parsing_release_lists(
-                release_data,
-                return_df=True,
-                selected_cols=selected_cols
-            )
-
-            if df is not None and not df.empty:
-                df.to_csv(
-                    path,
-                    mode="a",
-                    header=not wrote_anything,
-                    index=False
+        os.makedirs("output", exist_ok=True)
+        path = f"output/{output_name}"
+    
+        processed = 0
+        wrote_anything = False
+    
+        seen = set()
+        clean_ids = []
+        for rid in release_ids:
+            rid = str(rid).strip()
+            if rid and rid not in seen:
+                seen.add(rid)
+                clean_ids.append(rid)
+    
+        for i, rid in enumerate(clean_ids, start=1):
+            try:
+                release_data = self.get_release(rid)
+    
+                df = self.parsing_release_lists(
+                    release_data,
+                    return_df=True,
+                    selected_cols=selected_cols
                 )
-                wrote_anything = True
-                processed += 1
-
-            # small pause helps at large scale
-            time.sleep(0.35)
-
-            if i % 100 == 0:
-                print(f"Processed {i} / {len(clean_ids)} release IDs")
-
-        except Exception as e:
-            print(f"Skipping release {rid}: {e}")
-            continue
-
-    if not wrote_anything:
-        raise Exception("No releases processed")
-
-    print(f"Finished. Processed {processed} releases.")
-    return path
+    
+                if df is not None and not df.empty:
+                    df.to_csv(
+                        path,
+                        mode="a",
+                        header=not wrote_anything,
+                        index=False
+                    )
+                    wrote_anything = True
+                    processed += 1
+                    
+                time.sleep(0.35)
+    
+                if i % 100 == 0:
+                    print(f"Processed {i} / {len(clean_ids)} release IDs")
+    
+            except Exception as e:
+                print(f"Skipping release {rid}: {e}")
+                continue
+    
+        if not wrote_anything:
+            raise Exception("No releases processed")
+    
+        print(f"Finished. Processed {processed} releases.")
+        return path
     
     def export_artist_releases_csv(self, artist_id, selected_cols=None):
         releases = self.artist_releases(artist_id)
