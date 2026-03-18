@@ -219,6 +219,10 @@ class discogs:
         os.makedirs("output", exist_ok=True)
         path = f"output/{output_name}"
     
+        # start fresh each time
+        if os.path.exists(path):
+            os.remove(path)
+    
         processed = 0
         wrote_anything = False
     
@@ -249,7 +253,7 @@ class discogs:
                     )
                     wrote_anything = True
                     processed += 1
-                    
+    
                 time.sleep(0.35)
     
                 if i % 100 == 0:
@@ -263,17 +267,6 @@ class discogs:
             raise Exception("No releases processed")
     
         print(f"Finished. Processed {processed} releases.")
-        return path
-    
-    def export_artist_releases_csv(self, artist_id, selected_cols=None):
-        releases = self.artist_releases(artist_id)
-        df = pd.DataFrame(releases)
-        df['resource_url'] = df['resource_url'].apply(self.replace_artist_versions_url)
-        if selected_cols:
-            df = df[[col for col in selected_cols if col in df.columns]]
-        os.makedirs("output", exist_ok=True)
-        path = f"output/artist_{artist_id}.csv"
-        df.to_csv(path, index=False)
         return path
 
     def export_master_versions_csv(self, master_id, selected_cols=None):
