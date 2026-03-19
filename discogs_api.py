@@ -178,12 +178,16 @@ class discogs:
     def parsing_release_lists(self, data, return_df=False, selected_cols=None):
         rows = []
         exclusive = None
-        for i in data['companies']:
-            if i['entity_type_name'] == 'Exclusive Retailer':
-                exclusive = i['name']  
-        
+    
+        for i in data.get('companies', []):
+            if i.get('entity_type_name') == 'Exclusive Retailer':
+                exclusive = i.get('name')
+    
+        first_label = (data.get('labels') or [{}])[0]
+        first_format = (data.get('formats') or [{}])[0]
+        first_identifier = (data.get('identifiers') or [{}])[0]
+    
         for d in data.get('tracklist', []):
-            
             rows.append({
                 'artist':        data.get('artists_sort'),
                 'release_title': data.get('title'),
@@ -191,27 +195,27 @@ class discogs:
                 'track_title':   d.get('title'),
                 'duration':      self.format_to_mm_ss(d.get('duration')),
                 'release_id':    data.get('id'),
-                'label':         data.get('labels', [{}])[0].get('name'),
-                'format':        data.get('formats', [{}])[0].get('name'),
-                'catno':         data.get('labels', [{}])[0].get('catno'),
+                'label':         first_label.get('name'),
+                'format':        first_format.get('name'),
+                'catno':         first_label.get('catno'),
                 'release_url':   data.get('resource_url') or data.get('uri') or f"https://www.discogs.com/release/{data.get('id')}",
                 'notes':         data.get('notes'),
                 'exclusive':     exclusive,
                 'country':       data.get('country'),
-                'barcode':       data.get('identifiers', [{}])[0].get('value'),
-                'release_year': data.get('released'),
+                'barcode':       first_identifier.get('value'),
+                'release_year':  data.get('released'),
                 'credits_release': self._instrument_roles_only(data.get("extraartists", [])),
-                'credits_track': self._instrument_roles_only(d.get("extraartists", [])),
+                'credits_track':   self._instrument_roles_only(d.get("extraartists", [])),
             })
-
+    
         df = pd.DataFrame(rows)
         if selected_cols:
             df = df[[col for col in selected_cols if col in df.columns]]
-
+    
         os.makedirs("output", exist_ok=True)
         path = f"output/{data.get('id')}_release.csv"
         df.to_csv(path, index=False)
-
+    
         return df if return_df else path
 
     
