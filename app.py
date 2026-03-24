@@ -102,6 +102,22 @@ def download_master_csv():
         return jsonify({ 'error': str(e) }), 400  # return JSON, not let Flask send an HTML 500 page
     return send_file(file_path, as_attachment=True)
 
+
+@app.route('/download_release_json')
+def download_release_json():
+    release_id = request.args.get('id')
+
+    if not release_id:
+        return jsonify({'error': 'No release ID provided'}), 400
+
+    try:
+        file_path = dc.export_release_json(release_id)
+    except Exception as e:
+        print(f"ERROR in /download_release_json: {e}")
+        return jsonify({'error': str(e)}), 500
+
+    return send_file(file_path, as_attachment=True)
+
 @app.route('/search_artist')
 def search_artist():
     query = request.args.get('q')
