@@ -219,15 +219,22 @@ class discogs:
         return df if return_df else path
 
 
-    def export_release_json(self, data, return_obj=False):
+    def export_release_json(self, release_id, output_name = None):
+        import json
+
+        data = self.get_release(release_id)
         os.makedirs("output", exist_ok=True)
-        path = f"output/{data.get('id')}_release.json"
-        
+
+        if output_name = None:
+            output_name = f"{release_id}_release_json"
+
+        path = f"output/{output_name}"
+
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
-        
-        return data if return_obj else path
 
+        return path
+        
     
     def export_multiple_releases_tracks_csv(self, release_ids, selected_cols=None, output_name="multiple_releases_tracks.csv"):
         os.makedirs("output", exist_ok=True)
