@@ -73,6 +73,15 @@
       </div>
     </div>
 
+<!-- Download Single Release Full JSON -->
+<div class="mb-4">
+  <h4>Download Single Release Full JSON</h4>
+  <div class="input-group mb-2">
+    <input type="text" id="jsonReleaseId" class="form-control" placeholder="Enter release ID">
+    <button onclick="downloadReleaseJSON()" class="btn btn-primary">Download JSON</button>
+  </div>
+</div>
+    
 
 <!-- Download Multiple Release Tracklist Details -->
 <div class="mb-4">
@@ -459,6 +468,17 @@ showStatus("Generating master CSV...", "info", true);
       statusText.innerText = message;
       spinner.style.display = showSpinner ? "inline-block" : "none";
       status.style.display = "flex";
+    }
+    
+    function downloadReleaseJSON() {
+      const id = document.getElementById('jsonReleaseId').value.trim();
+      
+      if (!id) {
+        alert("Please enter a release ID");
+        return;
+      }
+      
+      window.location.href = `/download_release_json?id=${encodeURIComponent(id)}`;
     }
 
     function hideStatus() {
