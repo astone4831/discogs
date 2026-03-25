@@ -351,6 +351,17 @@ class discogs:
         final_df.to_csv(path, index=False)
         return path
 
+    def export_artist_releases_csv(self, artist_id, selected_cols=None):
+        releases = self.artist_releases(artist_id)
+        df = pd.DataFrame(releases)
+        df['resource_url'] = df['resource_url'].apply(self.replace_artist_versions_url)
+        if selected_cols:
+            df = df[[col for col in selected_cols if col in df.columns]]
+        os.makedirs("output", exist_ok=True)
+        path = f"output/artist_{artist_id}.csv"
+        df.to_csv(path, index=False)
+        return path
+
     def search_artist_and_release(self, artist_name, release_title):
         query = f"{artist_name} {release_title}".strip()
         params = {
