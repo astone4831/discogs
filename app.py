@@ -162,6 +162,28 @@ def download_master_deep_csv():
         return jsonify({'error': str(e)}), 500
     return send_file(file_path, as_attachment=True)
 
+@app.route("/download_multiple_master_deep_csv", methods=["POST"])
+def download_multiple_master_deep_csv():
+    try:
+        data = request.get_json() or {}
+        master_ids = data.get("master_ids", [])
+        selected_cols = data.get("selected_cols", [])
+
+        if not master_ids:
+            return jsonify({"error": "No master IDs provided"}), 400
+
+        file_path = dc.export_multiple_master_release_details_csv(
+            master_ids=master_ids,
+            selected_cols=selected_cols,
+            output_name="multiple_masters_deep.csv"
+        )
+
+        return send_file(file_path, as_attachment=True)
+
+    except Exception as e:
+        print(f"ERROR in /download_multiple_master_deep_csv: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/download_multiple_release_csv", methods=["POST"])
 def download_multiple_release_csv():
     try:
