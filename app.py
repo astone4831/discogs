@@ -127,7 +127,7 @@ def search_artist():
 
     params = {
         "q": query,
-        "type": "artist",
+        "type": "artist,release",
         "per_page":10,
         "key": dc.key,
         "secret": dc.secret
