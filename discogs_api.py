@@ -351,6 +351,104 @@ class discogs:
         final_df.to_csv(path, index=False)
         return path
 
+    def export_multiple_master_release_details_csv(self, master_ids, selected_cols=None, output_name="multiple_masters_deep.csv"):
+
+        os.makedirs("output", exist_ok=True)
+        path = f"output/{output_name}"
+    
+        # start fresh each time
+        if os.path.exists(path):
+            os.remove(path)
+    
+        processed_releases = 0
+        wrote_anything = False
+
+        # de-dupe master IDs while keeping order
+        seen_masters = set()
+        clean_master_ids = []
+        for mid in master_ids:
+            mid = str(mid).strip()
+            if mid and mid not in seen_masters:
+                seen_masters.add(mid)
+                clean_master_ids.append(mid)
+
+        for master_index, master_id in enumerate(clean_master_ids, start=1):
+            try:
+                all_release_ids = []
+                page = 1
+    
+                while True:
+                    url = f"{self.url_}masters/{master_id}/versions"
+                    r = requests.get(
+                        url,
+                        headers=self.headers,
+                        params={"per_page": 100, "page": page}
+                    )
+                    self.rate_check(r.headers)
+                    r.raise_for_status()
+    
+                    data = r.json()
+                    all_release_ids.extend([v.get("id") for v in data.get("versions", []) if v.get("id")])
+    
+                    if page >= data["pagination"]["pages"]:
+                        break
+                    page += 1
+                # de-dupe release IDs within this master
+                seen_releases = set()
+                clean_release_ids = []
+                for rid in all_release_ids:
+                    rid = str(rid).strip()
+                    if rid and rid not in seen_releases:
+                        seen_releases.add(rid)
+                        clean_release_ids.append(rid)
+    
+                for rid in clean_release_ids:
+                    try:
+                        time.sleep(0.3)
+                        release_data = self.get_release(rid)
+    
+                        df = self.parsing_release_lists(
+                            release_data,
+                            return_df=True,
+                            selected_cols=selected_cols
+                        )
+    
+                        if df is not None and not df.empty:
+                            # optional: add the master_id so you know which master each row came from
+                            if "master_id" not in df.columns:
+                                df.insert(0, "master_id", master_id)
+    
+                            df.to_csv(
+                                path,
+                                mode="a",
+                                header=not wrote_anything,
+                                index=False
+                            )
+                            wrote_anything = True
+                            processed_releases += 1
+    
+                            # blank row after each release, like your existing deep export
+                            blank = pd.DataFrame([[""] * len(df.columns)], columns=df.columns)
+                            blank.to_csv(path, mode="a", header=False, index=False)
+            
+                    except Exception as e:
+                            print(f"Skipping release {rid} from master {master_id}: {e}")
+                            continue
+            
+                print(f"Finished master {master_index} / {len(clean_master_ids)}: {master_id}")
+            
+            except Exception as e:
+                print(f"Skipping master {master_id}: {e}")
+                continue
+        if not wrote_anything:
+            raise Exception("No releases processed")
+
+        print(f"Finished. Processed {processed_releases} releases across {len(clean_master_ids)} masters.")
+        return path
+        
+    
+            
+
     def export_artist_releases_csv(self, artist_id, selected_cols=None):
         releases = self.artist_releases(artist_id)
         df = pd.DataFrame(releases)
